@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transaction = void 0;
 const typeorm_1 = require("typeorm");
+const user_entity_1 = require("./user.entity");
 let Transaction = class Transaction {
 };
 __decorate([
@@ -73,6 +74,12 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)({ name: 'delete_at' }),
     __metadata("design:type", Date)
 ], Transaction.prototype, "delete_at", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.transactions, {
+        onDelete: 'SET NULL',
+    }),
+    __metadata("design:type", Array)
+], Transaction.prototype, "user", void 0);
 Transaction = __decorate([
     (0, typeorm_1.Entity)()
 ], Transaction);

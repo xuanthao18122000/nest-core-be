@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Rice = exports.typeServer = void 0;
 const typeorm_1 = require("typeorm");
+const user_entity_1 = require("./user.entity");
 var typeServer;
 (function (typeServer) {
     typeServer["AUTO"] = "auto";
@@ -50,6 +51,10 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)({ name: 'delete_at' }),
     __metadata("design:type", Date)
 ], Rice.prototype, "delete_at", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => user_entity_1.User, (user) => user.rice),
+    __metadata("design:type", Array)
+], Rice.prototype, "users", void 0);
 Rice = __decorate([
     (0, typeorm_1.Entity)()
 ], Rice);

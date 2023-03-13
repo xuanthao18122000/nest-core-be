@@ -58,8 +58,8 @@ export class Transaction {
     public delete_at: Date;
 
     // Many to many User
-    // @ManyToOne(() => User, (user) => user.transactions, {
-    //     onDelete: 'SET NULL',
-    // })
-    // user: User[];
+    @ManyToOne(() => User, (user) => user.transactions, {
+        onDelete: 'SET NULL',
+    })
+    user: User[];
 }

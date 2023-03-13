@@ -1,3 +1,4 @@
+import { User } from "./user.entity";
 export declare class Notification {
     id: number;
     title: string;
@@ -8,4 +9,5 @@ export declare class Notification {
     created_at: Date;
     updated_at: Date;
     delete_at: Date;
+    user: User[];
 }

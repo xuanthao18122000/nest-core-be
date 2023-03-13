@@ -7,12 +7,14 @@ import {
   OneToMany,
   ManyToOne,
   ManyToMany,
-  JoinTable,
+  JoinTable, PrimaryColumn,
 } from 'typeorm';
 import { Account } from './account.entity';
 import { Notification } from './notification.entity';
 import { Role } from './role.entity';
 import {Transaction} from "./transaction.entity";
+import {Rice} from "./rice.entity";
+import {IsNotEmpty} from "class-validator";
 
 @Entity()
 export class User {
@@ -51,15 +53,15 @@ export class User {
   })
   accounts: Account[];
 
-  // @OneToMany(() => Notification, (notification) => notification.user, {
-  //   onDelete: 'SET NULL',
-  // })
-  // notifications: Notification[];
+  @OneToMany(() => Notification, (notification) => notification.user, {
+    onDelete: 'SET NULL',
+  })
+  notifications: Notification[];
 
-  // @OneToMany(() => Transaction, (transaction) => transaction.user, {
-  //   onDelete: 'SET NULL',
-  // })
-  // transactions: Transaction[];
+  @OneToMany(() => Transaction, (transaction) => transaction.user, {
+    onDelete: 'SET NULL',
+  })
+  transactions: Transaction[];
 
   @ManyToMany(() => Role, (role) => role.user)
   @JoinTable({
@@ -74,4 +76,43 @@ export class User {
     },
   })
   role: Role[];
+
+  @ManyToMany(() => Rice, (rice) => rice.users)
+  @JoinTable({
+    name: 'rice_user',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'rice_id',
+      referencedColumnName: 'id',
+    },
+
+  })
+  rice: Rice[];
+
+
+}
+
+@Entity('rice_user')
+export class UserRice {
+  @Column()
+  @IsNotEmpty()
+  @PrimaryColumn()
+  user_id: number;
+
+  @Column()
+  @IsNotEmpty()
+  @PrimaryColumn()
+  rice_id: number;
+
+  @Column({type: 'int' })
+  quantity: number;
+
+  @CreateDateColumn({ name: 'created_at' })
+  public created_at: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  public updated_at: Date;
 }

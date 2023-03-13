@@ -9,7 +9,7 @@ const DatabaseConfig = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASS,
     database: process.env.DB_DATABASE,
-    entities: [entities_1.Account, entities_1.Role, entities_1.User, entities_1.Transaction, entities_1.Notification, entities_1.Rice],
+    entities: [entities_1.Account, entities_1.Role, entities_1.User, entities_1.Transaction, entities_1.Notification, entities_1.Rice, entities_1.UserRice],
     migrations: ['src/migrations/*.ts', 'dist/src/migrations/*{.ts,.js}'],
     seeds: ['dist/**/*.seeds{.ts,.js}'],
     cli: {

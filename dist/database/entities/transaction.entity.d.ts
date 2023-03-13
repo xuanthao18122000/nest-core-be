@@ -1,3 +1,4 @@
+import { User } from "./user.entity";
 export declare class Transaction {
     id: number;
     type: string;
@@ -14,4 +15,5 @@ export declare class Transaction {
     created_at: Date;
     updated_at: Date;
     delete_at: Date;
+    user: User[];
 }

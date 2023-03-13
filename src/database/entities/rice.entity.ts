@@ -5,9 +5,10 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     ManyToOne,
-    OneToMany,
+    OneToMany, ManyToMany,
 } from 'typeorm';
 import { Service } from './service.entity';
+import {User} from "./user.entity";
 
 export enum typeServer {
     AUTO = 'auto',
@@ -41,4 +42,6 @@ export class Rice {
     public delete_at: Date;
 
     // Many to many User
+    @ManyToMany(() => User, (user) => user.rice)
+    users: User[];
 }

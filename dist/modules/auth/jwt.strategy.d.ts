@@ -4,6 +4,6 @@ declare const JwtStrategy_base: new (...args: any[]) => Strategy;
 export declare class JwtStrategy extends JwtStrategy_base {
     private userService;
     constructor(userService: UserService);
-    validate(payload: any): Promise<import("../../utils/dto/error_payload.dto").ErrorPayloadDto | import("../../database/entities").User>;
+    validate(payload: any): Promise<import("../../database/entities").User | import("../../utils/dto/error_payload.dto").ErrorPayloadDto>;
 }
 export {};
