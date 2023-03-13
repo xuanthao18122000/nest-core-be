@@ -40,4 +40,22 @@ export class NotificationService{
     }
   }
 
+  async readNotification(id: number) {
+    try{
+      const notification = await this.notificationRepo.findOne({
+        where: { id }
+      })
+
+      if(!notification){
+        throw code.NOTIFICATION_NOT_FOUND.type;
+      }
+
+      notification.is_read = true;
+      return await this.notificationRepo.save(notification);
+
+    }catch (error) {
+      throw error;
+    }
+  }
+
 }

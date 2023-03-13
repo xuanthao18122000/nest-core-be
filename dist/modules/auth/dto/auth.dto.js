@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RegisterPostDTO = exports.LoginPostDTO = void 0;
+exports.ForgotPasswordDTO = exports.ChangePasswordDTO = exports.RegisterPostDTO = exports.LoginPostDTO = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 const class_transformer_1 = require("class-transformer");
@@ -61,5 +61,40 @@ __decorate([
     (0, class_validator_1.IsInt)(),
     __metadata("design:type", Number)
 ], RegisterPostDTO.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'code (6 numbers)' }),
+    (0, class_transformer_1.Expose)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], RegisterPostDTO.prototype, "code", void 0);
 exports.RegisterPostDTO = RegisterPostDTO;
+class ChangePasswordDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'MD5 Hash' }),
+    (0, class_transformer_1.Expose)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ChangePasswordDTO.prototype, "currentPassword", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'MD5 Hash' }),
+    (0, class_transformer_1.Expose)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ChangePasswordDTO.prototype, "password", void 0);
+exports.ChangePasswordDTO = ChangePasswordDTO;
+class ForgotPasswordDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'email' }),
+    (0, class_transformer_1.Expose)(),
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ForgotPasswordDTO.prototype, "email", void 0);
+exports.ForgotPasswordDTO = ForgotPasswordDTO;
 //# sourceMappingURL=auth.dto.js.map

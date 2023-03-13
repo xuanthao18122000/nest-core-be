@@ -7,7 +7,6 @@ import { SendResponse } from 'src/utils/send-response';
 import { appDataSource } from 'src/configs/datasource';
 import { UtilsProvider } from 'src/utils/provider';
 import { Role } from '../../database/entities/role.entity';
-import {Service} from "../../database/entities/service.entity";
 
 @Injectable()
 export class RoleService {

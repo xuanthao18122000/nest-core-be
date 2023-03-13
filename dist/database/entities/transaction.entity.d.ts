@@ -15,5 +15,5 @@ export declare class Transaction {
     created_at: Date;
     updated_at: Date;
     delete_at: Date;
-    user: User[];
+    users: User[];
 }

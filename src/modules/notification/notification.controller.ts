@@ -48,7 +48,17 @@ export class NotificationController {
   }
 
   @Get('read/:id')
-  async readNotification(){
+  async readNotification(@Param('id') id: number){
+    try{
+      const result = await this.notificationService.readNotification(id);
 
+      if(!result) {
+        throw 'BACKEND';
+      }
+      return SendResponse.success([], 'Read details notification success!')
+
+    }catch (error) {
+      return SendResponse.error(error)
+    }
   }
 }

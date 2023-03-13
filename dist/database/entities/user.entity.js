@@ -20,7 +20,7 @@ const class_validator_1 = require("class-validator");
 let User = class User {
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)({ type: 'bigint' }),
     __metadata("design:type", Number)
 ], User.prototype, "id", void 0);
 __decorate([
@@ -60,6 +60,10 @@ __decorate([
     __metadata("design:type", Date)
 ], User.prototype, "updated_at", void 0);
 __decorate([
+    (0, typeorm_1.DeleteDateColumn)({ name: 'delete_at' }),
+    __metadata("design:type", Date)
+], User.prototype, "delete_at", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => account_entity_1.Account, (account) => account.user, {
         onDelete: 'SET NULL',
     }),
@@ -72,7 +76,7 @@ __decorate([
     __metadata("design:type", Array)
 ], User.prototype, "notifications", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => transaction_entity_1.Transaction, (transaction) => transaction.user, {
+    (0, typeorm_1.OneToMany)(() => transaction_entity_1.Transaction, (transaction) => transaction.users, {
         onDelete: 'SET NULL',
     }),
     __metadata("design:type", Array)

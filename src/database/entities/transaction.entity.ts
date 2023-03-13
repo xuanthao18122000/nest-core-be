@@ -7,7 +7,6 @@ import {
     ManyToOne,
     OneToMany,
 } from 'typeorm';
-import { Service } from './service.entity';
 import {User} from "./user.entity";
 
 @Entity()
@@ -61,5 +60,5 @@ export class Transaction {
     @ManyToOne(() => User, (user) => user.transactions, {
         onDelete: 'SET NULL',
     })
-    user: User[];
+    users: User[];
 }

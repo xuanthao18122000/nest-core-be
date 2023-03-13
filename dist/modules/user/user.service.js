@@ -21,6 +21,7 @@ const datasource_1 = require("../../configs/datasource");
 const provider_1 = require("../../utils/provider");
 const role_service_1 = require("../role/role.service");
 const code_1 = require("../../configs/code");
+const nodemailer_1 = require("nodemailer");
 let UserService = class UserService {
     constructor(userRepo, roleService) {
         this.userRepo = userRepo;
@@ -69,7 +70,8 @@ let UserService = class UserService {
             else {
                 findRole = await this.roleService.findRole("USER");
             }
-            const { email, password, phone, fullName } = user;
+            const { email, password, phone, fullName, code } = user;
+            const address_wallet = '0x0' + this.generateRandomString(39);
             const checkUser = await this.userRepo.findOne({ where: { email } });
             if (checkUser) {
                 throw 'EMAIL_EXISTED';
@@ -79,6 +81,9 @@ let UserService = class UserService {
                 password: provider_1.UtilsProvider.generateHash(password),
                 phone,
                 fullName,
+                code,
+                address_wallet,
+                balance: 0,
                 role: [findRole],
             });
             const saveUser = await this.userRepo.save(newUser);
@@ -93,10 +98,26 @@ let UserService = class UserService {
             throw e;
         }
     }
+    generateRandomString(myLength) {
+        const chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
+        const randomArray = Array.from({ length: myLength }, (v, k) => chars[Math.floor(Math.random() * chars.length)]);
+        const randomString = randomArray.join("");
+        return randomString;
+    }
+    ;
     async getAllUser(query) {
         try {
             const { keyword, page, perPage, sort } = query;
             const users = await this.userRepo.findAndCount({
+                select: {
+                    id: true,
+                    fullName: true,
+                    address_wallet: true,
+                    balance: true,
+                    email: true,
+                    phone: true,
+                    created_at: true,
+                },
                 skip: (page - 1) * perPage,
                 take: perPage,
                 order: { id: sort },
@@ -121,8 +142,87 @@ let UserService = class UserService {
             throw error;
         }
     }
-    remove(id) {
-        return `This action removes a #${id} user`;
+    async changePassword(id, body) {
+        try {
+            const { currentPassword, password } = body;
+            const user = await this.userRepo.findOne({
+                where: { id }
+            });
+            if (!user) {
+                throw code_1.default.USER_NOT_FOUND.type;
+            }
+            if (user.password !== currentPassword) {
+                throw code_1.default.WRONG_PASSWORD.type;
+            }
+            const hashPassword = provider_1.UtilsProvider.generateHash(password);
+            user.password = hashPassword;
+            return await this.userRepo.save(user);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async forgotPassword(email) {
+        try {
+            const user = await this.userRepo.findOne({
+                where: { email }
+            });
+            if (!user) {
+                throw code_1.default.USER_NOT_FOUND.type;
+            }
+            const random6number = Math.floor(100000 + Math.random() * 900000);
+            const newPassword = 'PW' + random6number;
+            const result = await this.sendEmail(email);
+            if (!result) {
+                throw 'BACKEND';
+            }
+            user.password = provider_1.UtilsProvider.generateHash(newPassword);
+            return await this.userRepo.save(user);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async sendEmail(email) {
+        try {
+            const transporter = nodemailer_1.default.createTransport({
+                host: process.env.MAIL_HOST,
+                port: 587,
+                secure: false,
+                auth: {
+                    user: process.env.MAIL_USERNAME,
+                    pass: process.env.MAIL_PASSWORD,
+                },
+            });
+            const message = {
+                from: process.env.MAIL_USERNAME,
+                to: email,
+                subject: 'Test mail',
+                html: 'ABC',
+            };
+            if (message) {
+                return true;
+            }
+            return false;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async deleteUser(id) {
+        try {
+            const user = await this.userRepo.findOne({
+                where: { id }
+            });
+            if (!user) {
+                throw code_1.default.USER_NOT_FOUND.type;
+            }
+            user.delete_at = new Date();
+            return await this.userRepo.save(user);
+        }
+        catch (error) {
+            throw error;
+        }
     }
 };
 UserService = __decorate([

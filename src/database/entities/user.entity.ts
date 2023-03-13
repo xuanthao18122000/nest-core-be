@@ -7,7 +7,7 @@ import {
   OneToMany,
   ManyToOne,
   ManyToMany,
-  JoinTable, PrimaryColumn,
+  JoinTable, PrimaryColumn, DeleteDateColumn,
 } from 'typeorm';
 import { Account } from './account.entity';
 import { Notification } from './notification.entity';
@@ -18,7 +18,7 @@ import {IsNotEmpty} from "class-validator";
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
   @Column({ type: 'varchar', length: 30, unique: true })
@@ -48,6 +48,9 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   public updated_at: Date;
 
+  @DeleteDateColumn({ name: 'delete_at' })
+  public delete_at: Date;
+
   @OneToMany(() => Account, (account) => account.user, {
     onDelete: 'SET NULL',
   })
@@ -58,7 +61,7 @@ export class User {
   })
   notifications: Notification[];
 
-  @OneToMany(() => Transaction, (transaction) => transaction.user, {
+  @OneToMany(() => Transaction, (transaction) => transaction.users, {
     onDelete: 'SET NULL',
   })
   transactions: Transaction[];
@@ -115,4 +118,6 @@ export class UserRice {
 
   @UpdateDateColumn({ name: 'updated_at' })
   public updated_at: Date;
+
+
 }

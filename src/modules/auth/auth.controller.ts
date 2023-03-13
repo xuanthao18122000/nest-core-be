@@ -13,7 +13,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
-import { LoginPostDTO, RegisterPostDTO } from './dto';
+import {ChangePasswordDTO, ForgotPasswordDTO, LoginPostDTO, RegisterPostDTO} from './dto';
 import { SendResponse } from '../../utils/send-response';
 import { ApiErrorResponse } from '../../schema/api_error_response';
 import code from '../../configs/code';
@@ -89,6 +89,7 @@ export class AuthController {
         return SendResponse.error('BACKEND');
       }
     } catch (e) {
+      console.log(e)
       return SendResponse.error(e);
     }
   }
@@ -111,6 +112,39 @@ export class AuthController {
       return SendResponse.success([user_info], 'Get user info successful!');
     }catch(err){
       return SendResponse.error(err);
+    }
+  }
+
+  @Post('change-password')
+  // @UseGuards(JwtAuthGuard)
+  async ChangePassword(@Body() body: ChangePasswordDTO, @GetUser() user) {
+    try {
+      const id = user.id;
+      const newUser = await this.userService.changePassword(id, body);
+      if (newUser) {
+        return SendResponse.success([], 'Change password success!');
+      }
+      return SendResponse.error('BACKEND');
+
+    } catch (e) {
+      console.log(e)
+      return SendResponse.error(e);
+    }
+  }
+
+  @Post('forgot-password')
+  // @UseGuards(JwtAuthGuard)
+  async ForgotPassword(@Body() body: ForgotPasswordDTO) {
+    try {
+      const email = body.email;
+      const newUser = await this.userService.forgotPassword(email);
+      if (newUser) {
+        return SendResponse.success([], 'Change password success!');
+      }
+      return SendResponse.error('BACKEND');
+
+    } catch (e) {
+      return SendResponse.error(e);
     }
   }
 }

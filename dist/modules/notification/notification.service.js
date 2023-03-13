@@ -49,6 +49,21 @@ let NotificationService = class NotificationService {
             throw error;
         }
     }
+    async readNotification(id) {
+        try {
+            const notification = await this.notificationRepo.findOne({
+                where: { id }
+            });
+            if (!notification) {
+                throw code_1.default.NOTIFICATION_NOT_FOUND.type;
+            }
+            notification.is_read = true;
+            return await this.notificationRepo.save(notification);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
 };
 NotificationService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(entities_1.Notification)),

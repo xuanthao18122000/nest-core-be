@@ -15,7 +15,10 @@ export declare class UserController {
         data: any;
         msg: string;
     }>;
-    createUser(): Promise<void>;
-    updateUser(): Promise<void>;
-    deleteUser(): Promise<void>;
+    deleteUser(id: number): Promise<import("../../utils/dto/error_payload.dto").ErrorPayloadDto | {
+        code: number;
+        success: boolean;
+        data: any;
+        msg: string;
+    }>;
 }

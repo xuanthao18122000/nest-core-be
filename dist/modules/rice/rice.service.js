@@ -49,6 +49,52 @@ let RiceService = class RiceService {
             throw error;
         }
     }
+    async getRiceUser(email, query) {
+        try {
+            const { keyword, page, perPage, sort } = query;
+            const rice = await this.riceRepo.findAndCount({
+                where: { users: { email } },
+                skip: (page - 1) * perPage,
+                take: perPage,
+                order: { id: sort },
+            });
+            return { list: rice[0], count: rice[1] };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async createRice(body) {
+        try {
+            return true;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async updateRice(body) {
+        try {
+            return true;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async deleteRice(id) {
+        try {
+            const rice = await this.riceRepo.findOne({
+                where: { id }
+            });
+            if (!rice) {
+                throw code_1.default.RICE_NOT_FOUND.type;
+            }
+            rice.delete_at = new Date();
+            return await this.riceRepo.save(rice);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
 };
 RiceService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(entities_1.Rice)),

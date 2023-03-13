@@ -5,9 +5,8 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     ManyToOne,
-    OneToMany, ManyToMany,
+    OneToMany, ManyToMany, DeleteDateColumn,
 } from 'typeorm';
-import { Service } from './service.entity';
 import {User} from "./user.entity";
 
 export enum typeServer {
@@ -32,13 +31,14 @@ export class Rice {
     @Column({ type: 'double' })
     price: number;
 
+
     @CreateDateColumn({ name: 'created_at' })
     public created_at: Date;
 
     @UpdateDateColumn({ name: 'updated_at' })
     public updated_at: Date;
 
-    @UpdateDateColumn({ name: 'delete_at' })
+    @DeleteDateColumn({ name: 'delete_at' })
     public delete_at: Date;
 
     // Many to many User

@@ -17,7 +17,7 @@ export default class CreateUsers implements Seeder {
             { role_key: 'USER', role_name: 'user' },
         ];
 
-        const roles = await userRepository
+        const roles = await roleRepository
             .createQueryBuilder()
             .insert()
             .into(Role)

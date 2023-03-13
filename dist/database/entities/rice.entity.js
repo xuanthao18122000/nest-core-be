@@ -48,7 +48,7 @@ __decorate([
     __metadata("design:type", Date)
 ], Rice.prototype, "updated_at", void 0);
 __decorate([
-    (0, typeorm_1.UpdateDateColumn)({ name: 'delete_at' }),
+    (0, typeorm_1.DeleteDateColumn)({ name: 'delete_at' }),
     __metadata("design:type", Date)
 ], Rice.prototype, "delete_at", void 0);
 __decorate([

@@ -53,11 +53,17 @@ let UserController = class UserController {
             return send_response_1.SendResponse.error(error);
         }
     }
-    async createUser() {
-    }
-    async updateUser() {
-    }
-    async deleteUser() {
+    async deleteUser(id) {
+        try {
+            const result = await this.userService.deleteUser(id);
+            if (result) {
+                return send_response_1.SendResponse.success([], 'Delete user success!');
+            }
+            throw 'BACKEND';
+        }
+        catch (error) {
+            return send_response_1.SendResponse.error(error);
+        }
     }
 };
 __decorate([
@@ -75,21 +81,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getOneUser", null);
 __decorate([
-    (0, common_1.Post)('create'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "createUser", null);
-__decorate([
-    (0, common_1.Put)(':id'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "updateUser", null);
-__decorate([
     (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "deleteUser", null);
 UserController = __decorate([

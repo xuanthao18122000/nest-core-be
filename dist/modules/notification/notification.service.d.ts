@@ -9,4 +9,5 @@ export declare class NotificationService {
         count: number;
     }>;
     getOneNotification(id: number): Promise<Notification>;
+    readNotification(id: number): Promise<Notification>;
 }

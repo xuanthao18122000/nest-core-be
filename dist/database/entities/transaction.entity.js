@@ -79,7 +79,7 @@ __decorate([
         onDelete: 'SET NULL',
     }),
     __metadata("design:type", Array)
-], Transaction.prototype, "user", void 0);
+], Transaction.prototype, "users", void 0);
 Transaction = __decorate([
     (0, typeorm_1.Entity)()
 ], Transaction);

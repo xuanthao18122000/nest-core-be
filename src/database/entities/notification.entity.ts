@@ -7,7 +7,6 @@ import {
     ManyToOne,
     OneToMany,
 } from 'typeorm';
-import { Service } from './service.entity';
 import {User} from "./user.entity";
 
 

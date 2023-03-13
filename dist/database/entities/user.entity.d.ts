@@ -14,6 +14,7 @@ export declare class User {
     code: number;
     created_at: Date;
     updated_at: Date;
+    delete_at: Date;
     accounts: Account[];
     notifications: Notification[];
     transactions: Transaction[];

@@ -11,6 +11,7 @@ import { UserService } from './user.service';
 import { ApiTags } from "@nestjs/swagger";
 import { QueryListDto } from "../../global/dto/query-list.dto";
 import { SendResponse } from "../../utils/send-response";
+import {User} from "../../database/entities";
 
 @ApiTags('User')
 @Controller('')
@@ -57,18 +58,27 @@ export class UserController {
     }
   }
 
-  @Post('create')
-  async createUser() {
+  // @Post('create')
+  // async createUser() {
+  //
+  // }
 
-  }
-
-  @Put(':id')
-  async updateUser(){
-
-  }
+  // @Put(':id')
+  // async updateUser(){
+  //
+  // }
 
   @Delete(':id')
-  async deleteUser() {
+  async deleteUser(@Param('id') id: number) {
+    try{
+      const result = await this.userService.deleteUser(id);
 
+      if (result){
+        return SendResponse.success([], 'Delete user success!')
+      }
+      throw 'BACKEND';
+    }catch (error) {
+      return SendResponse.error(error);
+    }
   }
 }

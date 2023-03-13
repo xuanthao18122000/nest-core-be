@@ -16,7 +16,7 @@ let TransactionModule = class TransactionModule {
 };
 TransactionModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.Transaction])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.Transaction, entities_1.Account])],
         controllers: [transaction_controller_1.TransactionController],
         providers: [transaction_service_1.TransactionService],
     })

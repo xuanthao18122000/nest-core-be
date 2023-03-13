@@ -16,7 +16,7 @@ let RiceModule = class RiceModule {
 };
 RiceModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.Rice])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([entities_1.Rice, entities_1.Account])],
         controllers: [rice_controller_1.RiceController],
         providers: [rice_service_1.RiceService],
     })

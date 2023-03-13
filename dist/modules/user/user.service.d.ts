@@ -1,6 +1,6 @@
 import { User } from 'src/database/entities/user.entity';
 import { Repository } from 'typeorm';
-import { RegisterPostDTO } from '../auth/dto/index';
+import { ChangePasswordDTO, RegisterPostDTO } from '../auth/dto/index';
 import { RoleService } from "../role/role.service";
 import { QueryListDto } from "../../global/dto/query-list.dto";
 export declare class UserService {
@@ -11,10 +11,14 @@ export declare class UserService {
     static StaticFindUserById(UserId: any): Promise<User>;
     findUserById(id: number): Promise<User>;
     registerUser(user: RegisterPostDTO): Promise<User>;
+    generateRandomString(myLength: any): string;
     getAllUser(query: QueryListDto): Promise<{
         list: User[];
         count: number;
     }>;
     getOneUser(id: number): Promise<User>;
-    remove(id: number): string;
+    changePassword(id: number, body: ChangePasswordDTO): Promise<User>;
+    forgotPassword(email: string): Promise<User>;
+    sendEmail(email: string): Promise<boolean>;
+    deleteUser(id: number): Promise<User>;
 }

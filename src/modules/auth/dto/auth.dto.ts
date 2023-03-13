@@ -50,7 +50,40 @@ export class RegisterPostDTO {
   @IsInt()
   phone: number;
 
-  // public create_at: Date;
-  //
-  // public update_at: Date;
+  @ApiProperty({ example: 'code (6 numbers)' })
+  @Expose()
+  @IsNotEmpty()
+  @Type(() => Number)
+  @IsInt()
+  code: number;
+
+  address: string;
+
+  balance: number;
+
+}
+
+export class ChangePasswordDTO {
+
+  @ApiProperty({ example: 'MD5 Hash' })
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  currentPassword: string;
+
+  @ApiProperty({ example: 'MD5 Hash' })
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+
+}
+
+export class ForgotPasswordDTO {
+  @ApiProperty({ example: 'email' })
+  @Expose()
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
 }

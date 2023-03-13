@@ -15,5 +15,10 @@ export declare class NotificationController {
         data: any;
         msg: string;
     }>;
-    readNotification(): Promise<void>;
+    readNotification(id: number): Promise<import("../../utils/dto/error_payload.dto").ErrorPayloadDto | {
+        code: number;
+        success: boolean;
+        data: any;
+        msg: string;
+    }>;
 }

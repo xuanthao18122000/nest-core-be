@@ -78,6 +78,7 @@ let AuthController = class AuthController {
             }
         }
         catch (e) {
+            console.log(e);
             return send_response_1.SendResponse.error(e);
         }
     }
@@ -95,6 +96,33 @@ let AuthController = class AuthController {
         }
         catch (err) {
             return send_response_1.SendResponse.error(err);
+        }
+    }
+    async ChangePassword(body, user) {
+        try {
+            const id = user.id;
+            const newUser = await this.userService.changePassword(id, body);
+            if (newUser) {
+                return send_response_1.SendResponse.success([], 'Change password success!');
+            }
+            return send_response_1.SendResponse.error('BACKEND');
+        }
+        catch (e) {
+            console.log(e);
+            return send_response_1.SendResponse.error(e);
+        }
+    }
+    async ForgotPassword(body) {
+        try {
+            const email = body.email;
+            const newUser = await this.userService.forgotPassword(email);
+            if (newUser) {
+                return send_response_1.SendResponse.success([], 'Change password success!');
+            }
+            return send_response_1.SendResponse.error('BACKEND');
+        }
+        catch (e) {
+            return send_response_1.SendResponse.error(e);
         }
     }
 };
@@ -134,6 +162,21 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "UserInfo", null);
+__decorate([
+    (0, common_1.Post)('change-password'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, auth_decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.ChangePasswordDTO, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "ChangePassword", null);
+__decorate([
+    (0, common_1.Post)('forgot-password'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.ForgotPasswordDTO]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "ForgotPassword", null);
 AuthController = __decorate([
     (0, swagger_1.ApiTags)('Auth'),
     (0, common_1.Controller)(''),

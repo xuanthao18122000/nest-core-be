@@ -52,7 +52,17 @@ let NotificationController = class NotificationController {
             return send_response_1.SendResponse.error(error);
         }
     }
-    async readNotification() {
+    async readNotification(id) {
+        try {
+            const result = await this.notificationService.readNotification(id);
+            if (!result) {
+                throw 'BACKEND';
+            }
+            return send_response_1.SendResponse.success([], 'Read details notification success!');
+        }
+        catch (error) {
+            return send_response_1.SendResponse.error(error);
+        }
     }
 };
 __decorate([
@@ -71,8 +81,9 @@ __decorate([
 ], NotificationController.prototype, "getOneNotification", null);
 __decorate([
     (0, common_1.Get)('read/:id'),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], NotificationController.prototype, "readNotification", null);
 NotificationController = __decorate([

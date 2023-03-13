@@ -7,4 +7,14 @@ export declare class RegisterPostDTO {
     password: string;
     fullName: string;
     phone: number;
+    code: number;
+    address: string;
+    balance: number;
+}
+export declare class ChangePasswordDTO {
+    currentPassword: string;
+    password: string;
+}
+export declare class ForgotPasswordDTO {
+    email: string;
 }

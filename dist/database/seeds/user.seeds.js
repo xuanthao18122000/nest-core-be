@@ -13,7 +13,7 @@ class CreateUsers {
             { role_key: 'ADMIN', role_name: 'admin' },
             { role_key: 'USER', role_name: 'user' },
         ];
-        const roles = await userRepository
+        const roles = await roleRepository
             .createQueryBuilder()
             .insert()
             .into(role_entity_1.Role)

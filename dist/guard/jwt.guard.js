@@ -27,6 +27,7 @@ let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
     async handleRequest(err, user, info, context, status) {
         if (context.getRequest().headers.authorization) {
             const bearToken = context.getRequest().headers.authorization;
+            console.log(bearToken);
             const splitToken = bearToken.split('Bearer ');
             const token = splitToken[1];
             const account = await this.accountRepo.findOne({
@@ -34,6 +35,7 @@ let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
                     token,
                 },
             });
+            console.log(account);
             if (user && account) {
                 return user;
             }
