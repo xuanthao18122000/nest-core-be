@@ -89,7 +89,6 @@ export class AuthController {
         return SendResponse.error('BACKEND');
       }
     } catch (e) {
-      console.log(e)
       return SendResponse.error(e);
     }
   }
@@ -116,7 +115,8 @@ export class AuthController {
   }
 
   @Post('change-password')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async ChangePassword(@Body() body: ChangePasswordDTO, @GetUser() user) {
     try {
       const id = user.id;
@@ -127,19 +127,17 @@ export class AuthController {
       return SendResponse.error('BACKEND');
 
     } catch (e) {
-      console.log(e)
       return SendResponse.error(e);
     }
   }
 
   @Post('forgot-password')
-  // @UseGuards(JwtAuthGuard)
   async ForgotPassword(@Body() body: ForgotPasswordDTO) {
     try {
       const email = body.email;
       const newUser = await this.userService.forgotPassword(email);
       if (newUser) {
-        return SendResponse.success([], 'Change password success!');
+        return SendResponse.success([], 'Password has been sent to email successfully!');
       }
       return SendResponse.error('BACKEND');
 

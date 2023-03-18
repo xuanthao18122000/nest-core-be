@@ -7,7 +7,7 @@ import { UserService } from '../user/user.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtStrategy } from './jwt.strategy';
-import { User } from 'src/database/entities/user.entity';
+import {User, UserRice} from 'src/database/entities/user.entity';
 import { Account } from 'src/database/entities/account.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import {Role} from "src/database/entities/role.entity";
@@ -16,7 +16,7 @@ import {RoleService} from "../role/role.service";
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    TypeOrmModule.forFeature([User, Account, Role]),
+    TypeOrmModule.forFeature([User, Account, Role, UserRice]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

@@ -5,13 +5,14 @@ import {
   Body,
   Patch,
   Param,
-  Delete, Put, Query
+  Delete, Put, Query, UseGuards
 } from "@nestjs/common";
 import { UserService } from './user.service';
-import { ApiTags } from "@nestjs/swagger";
+import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
 import { QueryListDto } from "../../global/dto/query-list.dto";
 import { SendResponse } from "../../utils/send-response";
 import {User} from "../../database/entities";
+import {JwtAuthGuard} from "../../guard/jwt.guard";
 
 @ApiTags('User')
 @Controller('')
@@ -21,6 +22,8 @@ export class UserController {
   ) {}
 
   @Get('list')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async getAllUser(@Query() query: QueryListDto) {
     try{
       query.perPage = !query.perPage ? 10 : query.perPage;
@@ -42,12 +45,13 @@ export class UserController {
       },'Get list users success!')
 
     }catch (error) {
-      console.log(error);
       return SendResponse.error(error);
     }
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async getOneUser(@Param('id') id: number) {
     try{
       const user = await this.userService.getOneUser(id);
@@ -69,6 +73,8 @@ export class UserController {
   // }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async deleteUser(@Param('id') id: number) {
     try{
       const result = await this.userService.deleteUser(id);

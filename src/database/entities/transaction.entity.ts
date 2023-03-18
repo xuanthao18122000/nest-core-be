@@ -23,11 +23,11 @@ export class Transaction {
     @Column()
     image: string;
 
-    @Column()
-    description: string;
-
     @Column({ type: 'double' })
     amount: number;
+
+    @Column()
+    description: string;
 
     @Column()
     from_address: string;
@@ -60,5 +60,5 @@ export class Transaction {
     @ManyToOne(() => User, (user) => user.transactions, {
         onDelete: 'SET NULL',
     })
-    users: User[];
+    user: User;
 }

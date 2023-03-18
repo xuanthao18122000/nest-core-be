@@ -3,6 +3,7 @@ import { RiceModule } from "../modules/rice/rice.module";
 import { TransactionModule } from "../modules/transaction/transaction.module";
 import { NotificationModule } from "../modules/notification/notification.module";
 import { UserModule } from "../modules/user/user.module";
+import {ImageModule} from "../modules/image/image.module";
 
 
 export const Routes = [
@@ -29,6 +30,10 @@ export const Routes = [
       {
         path: 'user',
         module: UserModule,
+      },
+      {
+        path: 'image',
+        module: ImageModule,
       }
     ],
   },

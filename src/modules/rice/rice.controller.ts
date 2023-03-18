@@ -16,6 +16,8 @@ export class RiceController {
 
   @ApiBearerAuth()
   @Get('list')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async getAllRice(@Query() query: QueryListDto) {
     try{
       query.page = !query.page ? 1 : query.page;
@@ -42,6 +44,8 @@ export class RiceController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async getOneRice(@Param('id') id: number) {
     try{
       const rice = await this.riceService.getOneRice(id);
@@ -79,14 +83,17 @@ export class RiceController {
   }
 
   @Post('create')
-  async createRice(@Body() body: RicePostDTO) {
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async createRice(@GetUser() user, @Body() body: RicePostDTO) {
     try{
-      const result = await this.riceService.createRice(body);
+      // Call user service check user is admin
+      const email = user.email;
+      const result = await this.riceService.createRice(user, body);
 
       if(!result){
         throw 'BACKEND';
       }
-
       return SendResponse.success([], 'Create rice success!')
     }catch (error) {
       return SendResponse.error(error);
@@ -94,14 +101,15 @@ export class RiceController {
   }
 
   @Put(':id')
-  async updateRice(@Body() body: RicePutDTO) {
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async updateRice(@Param('id') id: number, @Body() body: RicePutDTO) {
     try{
-      const result = await this.riceService.updateRice(body);
+      const result = await this.riceService.updateRice( id, body);
 
       if(!result){
         throw 'BACKEND';
       }
-
       return SendResponse.success([], 'Update rice success!')
     }catch (error) {
       return SendResponse.error(error);
@@ -109,6 +117,8 @@ export class RiceController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async deleteRice(@Param('id') id: number) {
     try{
       const result = await this.riceService.deleteRice(id);

@@ -1,6 +1,6 @@
 import { QueryListDto } from "../../global/dto/query-list.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Notification } from "../../database/entities";
+import {Notification, User} from "../../database/entities";
 import { Repository } from "typeorm";
 import code from "../../configs/code";
 
@@ -53,6 +53,38 @@ export class NotificationService{
       notification.is_read = true;
       return await this.notificationRepo.save(notification);
 
+    }catch (error) {
+      throw error;
+    }
+  }
+
+  async createNotification(title: string, image: string, description: string, content: string, receiver : User){
+    try {
+      const notification = await this.notificationRepo.create({
+        title,
+        image,
+        description,
+        content,
+        is_read: false,
+        user: receiver,
+      })
+      return await this.notificationRepo.save(notification);
+    }catch (error) {
+      throw error;
+    }
+  }
+
+  async createNotificationRice(title: string, image: string, description: string, content: string,user : User){
+    try {
+      const notification = await this.notificationRepo.create({
+        title,
+        image,
+        description,
+        content,
+        is_read: false,
+        user: user,
+      })
+      return await this.notificationRepo.save(notification);
     }catch (error) {
       throw error;
     }

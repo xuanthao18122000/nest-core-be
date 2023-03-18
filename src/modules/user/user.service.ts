@@ -1,31 +1,84 @@
-import { Injectable } from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/database/entities/user.entity';
-import { Repository } from 'typeorm';
+import {User, UserRice} from 'src/database/entities/user.entity';
+import {DataSource, Repository} from 'typeorm';
 import {ChangePasswordDTO, ForgotPasswordDTO, RegisterPostDTO} from '../auth/dto/index';
-import { SendResponse } from 'src/utils/send-response';
 import { appDataSource } from 'src/configs/datasource';
 import { UtilsProvider } from 'src/utils/provider';
-import { Role } from '../../database/entities/role.entity';
 import {RoleService} from "../role/role.service";
 import { QueryListDto } from "../../global/dto/query-list.dto";
 import code from "../../configs/code";
-import randomstring from 'randomstring';
-import nodemailer from 'nodemailer';
+import { TransactionFor } from 'nest-transact';
+import { MailerService } from "@nestjs-modules/mailer";
+import * as md5 from 'md5';
+import * as bcrypt from "bcrypt";
+import { ModuleRef } from '@nestjs/core';
 
 @Injectable()
-export class UserService {
+export class UserService   {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(UserRice)
+    private readonly userRiceRepo: Repository<UserRice>,
     private readonly roleService: RoleService,
-  ) {}
+    private mailerService: MailerService,
+    private readonly dataSource: DataSource,
+  ) {
+  }
 
   async findUserByEmail(email: string): Promise<User> {
     const user = await this.userRepo.findOne({
       where: { email: email },
       relations: {
         role: true,
+      },
+    });
+    return user;
+  }
+
+  async findAdmin(): Promise<User> {
+    try{
+      const user = await this.userRepo.findOne({
+        where: {role: {
+          role_key: 'ADMIN',
+          }}
+      })
+      return user;
+    }catch (error) {
+      throw error;
+    }
+  }
+
+  async findAdminByRice(rice_id: number): Promise<UserRice> {
+    try{
+      const user = await this.userRepo.findOne({
+        where: {
+          role: {
+            role_key: 'ADMIN',
+          },
+        },
+      })
+      const userRice = await this.userRiceRepo.findOne({
+        where: {
+          rice_id,
+          user_id: user.id,
+        }
+      })
+      console.log(userRice)
+      return userRice;
+    }catch (error) {
+      throw error;
+    }
+  }
+
+  async findUserByRice(email: string, rice_id: number): Promise<User> {
+    const user = await this.userRepo.findOne({
+      where: {
+        email: email,
+      },
+      relations: {
+        rice: true,
       },
     });
     return user;
@@ -67,7 +120,18 @@ export class UserService {
       }
 
       const { email, password, phone, fullName, code } = user;
-      const address_wallet = '0x0' + this.generateRandomString( 39);
+
+      let isAddressExist = false;
+      let address_wallet = '';
+      while (!isAddressExist){
+        address_wallet = '0x0' + this.generateRandomString( 39);
+        const user = await this.userRepo.findOne({
+          where: { address_wallet: address_wallet}
+        })
+        if(!user){
+          isAddressExist = true;
+        }
+      }
       const checkUser = await this.userRepo.findOne({ where: { email } });
       if (checkUser) {
         throw 'EMAIL_EXISTED';
@@ -143,17 +207,22 @@ export class UserService {
     }
   }
 
+  validateHash(password: string, hash: string): boolean {
+    if (!password || !hash) {
+      return false;
+    }
+    return bcrypt.compareSync(password, hash);
+  }
   async changePassword(id: number, body: ChangePasswordDTO): Promise<User> {
     try{
       const { currentPassword, password } = body;
-      const user = await this.userRepo.findOne({
+      let user = await this.userRepo.findOne({
         where: { id }
       })
-
       if(!user){
         throw code.USER_NOT_FOUND.type;
       }
-      if(user.password !== currentPassword){
+      if(!this.validateHash(currentPassword, user.password)){
         throw code.WRONG_PASSWORD.type;
       }
 
@@ -167,58 +236,61 @@ export class UserService {
 
   async forgotPassword(email: string): Promise<User> {
     try{
-      const user = await this.userRepo.findOne({
+      let user = await this.userRepo.findOne({
         where: { email }
       })
 
       if(!user){
-        throw code.USER_NOT_FOUND.type;
+        throw code.EMAIL_NOT_EXIST.type;
       }
 
       const random6number = Math.floor(100000 + Math.random() * 900000)
       const newPassword = 'PW' + random6number;
 
       //Send mail
-      const result = await this.sendEmail(email);
+      const result = await this.sendEmail(email, newPassword);
       if(!result){
         throw 'BACKEND';
       }
 
-      user.password = UtilsProvider.generateHash(newPassword);
+      user.password = UtilsProvider.generateHash(md5(md5(newPassword)));
       return await this.userRepo.save(user);
     }catch (error) {
       throw error;
     }
   }
 
-  async sendEmail(email: string){
-    try{
-      //create a nodemailer transporter
-      const transporter = nodemailer.createTransport({
-        host: process.env.MAIL_HOST,
-        port: 587,
-        secure: false,
-        auth: {
-          user: process.env.MAIL_USERNAME,
-          pass: process.env.MAIL_PASSWORD,
-        },
-      })
-
-      // create a nodemailer message
-      const message = {
-        from: process.env.MAIL_USERNAME, // replace with your email address
-        to: email,
-        subject: 'Test mail',
-        html: 'ABC',
-      };
-
-      if(message) {
-        return true;
+  async sendEmail(email: string, newPassword: string){
+    const send = await this.mailerService.sendMail({
+      to: email,
+      subject: 'Your password to sign in!',
+      html: '<div style="padding:15px;background-color:#f5f6fa"><div style="width:512px;margin:0 auto"><div class="adM">\n' +
+          '  </div><div style="border-bottom:1px solid #2f3640;padding:7px 0;border-radius:6px 6px 0 0;display:flex;background-color:#2f3640"><div class="adM">\n' +
+          '    </div><div style="margin:0 auto;display:flex"><div class="adM">\n' +
+          '     \n' +
+          '    </div><strong style="margin-left:15px;margin-top:2px;font-size:20px;color:white!important">RICE CORE </strong>\n' +
+          '    </div>\n' +
+          '  </div>\n' +
+          '  <div style="padding:15px;background-color:#ffffff">\n' +
+          '    <span style="text-align:center;display:block;margin-bottom:10px;color:#2f3640!important;font-size:15px;font-weight:500">Your password to sign in!</span>\n' +
+          '        <div style="text-align:center">\n' +
+          '            <div style="border:2px solid #273c75;display:inline-block;padding:3px 7px;height:30px;line-height:30px;margin:0 auto;text-align:center;color:#273c75;font-weight:800;font-size:21px">\n' +
+          newPassword + '\n' +
+          '            </div>\n' +
+          '            </div>\n' +
+          '  </div>\n' +
+          '  <div style="background:#ffffff;border-top:1px solid #eee;border-bottom:1px solid #eee;text-align:center;padding:10px 0;font-size:13px;font-style:italic;color:#718093!important">\n' +
+          '     Rice Core - 2023\n' +
+          '  </div><div class="yj6qo"></div><div class="adL">\n' +
+          '  </div><div style="width:100%;height:4px;border-radius:0 0 6px 6px;background-color:#2f3640" class="adL">\n' +
+          '</div><div class="adL">\n' +
+          '</div></div></div>',
+      context: {
+        name: 'name'
       }
-      return false;
-    }catch (error) {
-      throw error;
-    }
+    })
+    if(send) return true;
+    else throw 'BACKEND';
   }
 
   async deleteUser(id: number): Promise<User> {
@@ -237,4 +309,90 @@ export class UserService {
       throw error;
     }
   }
+
+  //Transaction
+  async transferMoney(emailSender: string,emailReceiver: string, amount: number): Promise<void> {
+    const queryRunner  = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try{
+      // Minutes money sender
+      const sender = await queryRunner.manager.findOne(User,{
+        where: { email: emailSender }
+      })
+      sender.balance -= amount;
+      await queryRunner.manager.save(sender);
+
+      // Plus money receiver
+      const receiver = await queryRunner.manager.findOne(User,{
+        where: { email: emailReceiver }
+      })
+      receiver.balance += amount;
+      await queryRunner.manager.save(receiver);
+
+      // Commit transaction
+      await queryRunner.commitTransaction();
+    }catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    }finally {
+      await queryRunner.release();
+    }
+  }
+
+  async buyRice(emailSender: string,emailReceiver: string, amount: number, rice_id: number): Promise<void> {
+      const queryRunner  = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try{
+        // Plus Rice for buyer
+        const buyer = await queryRunner.manager.findOne(User,{
+          where: { email: emailSender }
+        })
+        const userRiceBuyer = await queryRunner.manager.findOne(UserRice, {
+          where: {
+            rice_id,
+            user_id: buyer.id,
+          }
+        })
+        if(userRiceBuyer){
+          userRiceBuyer.quantity += amount;
+          await queryRunner.manager.save(userRiceBuyer);
+        }else {
+          const newUserRice = await queryRunner.manager.create(UserRice,{
+            rice_id,
+            user_id: buyer.id,
+            quantity: amount,
+          })
+          await queryRunner.manager.save(newUserRice);
+        }
+
+
+        // Minutes Rice for buyer
+        const seller = await queryRunner.manager.findOne(User,{
+          where: { email: emailReceiver }
+        })
+        const userRiceSeller = await queryRunner.manager.findOne(UserRice, {
+          where: {
+            rice_id,
+            user_id: seller.id,
+          }
+        })
+        if(!userRiceSeller){
+          throw code.RICE_NOT_FOUND.type;
+        }
+        userRiceSeller.quantity -= amount;
+        await queryRunner.manager.save(userRiceSeller);
+
+        // Commit transaction
+        await queryRunner.commitTransaction();
+      }catch (error) {
+        await queryRunner.rollbackTransaction();
+        throw error;
+      }finally {
+        await queryRunner.release();
+      }
+    }
+
+
 }

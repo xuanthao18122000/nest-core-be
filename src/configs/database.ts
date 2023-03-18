@@ -16,7 +16,7 @@ const DatabaseConfig = {
   cli: {
     migrationsDir: 'src/migrations',
   },
-  synchronize: true,
+  synchronize: false,
   dropSchema: false,
 } as TypeOrmModuleAsyncOptions;
 

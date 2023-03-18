@@ -22,12 +22,6 @@ export class RicePostDTO {
     @IsString()
     image: string;
 
-    @ApiProperty({ example: 'phone' })
-    @Expose()
-    @IsNotEmpty()
-    @Type(() => Number)
-    @IsInt()
-    phone: number;
 
     @ApiProperty({ example: 'totalQuantity' })
     @Expose()
@@ -54,18 +48,12 @@ export class RicePutDTO {
     @IsString()
     image: string;
 
-    @ApiProperty({ example: 'phone' })
-    @Expose()
-    @IsNotEmpty()
-    @Type(() => Number)
-    @IsInt()
-    phone: number;
 
-    @ApiProperty({ example: 'totalQuantity' })
-    @Expose()
-    @IsNotEmpty()
-    @Type(() => Number)
-    @IsInt()
+    // @ApiProperty({ example: 'totalQuantity' })
+    // @Expose()
+    // @IsNotEmpty()
+    // @Type(() => Number)
+    // @IsInt()
     totalQuantity: number;
 
     price: number;

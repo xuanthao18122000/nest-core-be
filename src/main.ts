@@ -5,7 +5,10 @@ import * as basicAuth from 'express-basic-auth';
 import { ValidationPipe } from './pipe/validation.pipe';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule, {
+
+      cors: true
+  });
   app.useGlobalPipes(
     ValidationPipe({
       whitelist: false,

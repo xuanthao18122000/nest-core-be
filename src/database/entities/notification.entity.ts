@@ -41,8 +41,8 @@ export class Notification {
     public delete_at: Date;
 
     // Many to one User
-    @ManyToOne(() => User, (user) => user.notifications, {
+    @ManyToOne(() => User, (users) => users.notification, {
         onDelete: 'SET NULL',
     })
-    user: User[];
+    user: User;
 }

@@ -1,8 +1,9 @@
-import { Controller, Get, Param, Query } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import {Controller, Get, Param, Query, UseGuards} from "@nestjs/common";
+import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
 import { QueryListDto } from "../../global/dto/query-list.dto";
 import { NotificationService } from "./notification.service";
 import { SendResponse } from "../../utils/send-response";
+import {JwtAuthGuard} from "../../guard/jwt.guard";
 
 @ApiTags('Notification')
 @Controller()
@@ -12,6 +13,8 @@ export class NotificationController {
   ){}
 
   @Get('list')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async getAllNotification(@Query() query: QueryListDto){
     try{
       query.perPage = !query.perPage ? 10 : query.perPage;
@@ -37,6 +40,8 @@ export class NotificationController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async getOneNotification(@Param('id') id: number){
     try{
       const notification = await this.notificationService.getOneNotification(id);
@@ -48,6 +53,8 @@ export class NotificationController {
   }
 
   @Get('read/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async readNotification(@Param('id') id: number){
     try{
       const result = await this.notificationService.readNotification(id);

@@ -5,7 +5,7 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     ManyToOne,
-    OneToMany, ManyToMany, DeleteDateColumn,
+    OneToMany, ManyToMany, DeleteDateColumn, JoinTable,
 } from 'typeorm';
 import {User} from "./user.entity";
 
@@ -42,6 +42,22 @@ export class Rice {
     public delete_at: Date;
 
     // Many to many User
-    @ManyToMany(() => User, (user) => user.rice)
+    @ManyToMany(() => User, (user) => user.rice,{onDelete: 'NO ACTION', onUpdate: 'NO ACTION'})
     users: User[];
+    @ManyToMany(
+        () => User,
+        user => user.rice, //optional
+        {onDelete: 'NO ACTION', onUpdate: 'NO ACTION'})
+    @JoinTable({
+        name: 'user_rice',
+        joinColumn: {
+            name: 'rice_id',
+            referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+            name: 'user_id',
+            referencedColumnName: 'id',
+        },
+    })
+    user?: User[];
 }

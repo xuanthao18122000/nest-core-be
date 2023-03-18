@@ -31,11 +31,16 @@ const code = {
   USER_NOT_ALLOW: { code: 1070, type: 'USER_NOT_ALLOW' },
   UPDATE_SERVER_FAILED: { code: 1071, type: 'UPDATE_SERVER_FAILED' },
   DELETE_SERVER_FAILED: { code: 1072, type: 'DELETE_SERVER_FAILED' },
+  NOT_YOUR_EMAIL: { code: 1073, type: 'NOT_YOUR_EMAIL' },
+
   //Rice
   RICE_NOT_FOUND: { code: 1101, type: 'RICE_NOT_FOUND' },
+  NOT_ENOUGH_RICE: { code: 1102, type: 'NOT_ENOUGH_RICE' },
   //Rice
   NOTIFICATION_NOT_FOUND: { code: 1201, type: 'NOTIFICATION_NOT_FOUND' },
   //Transaction
   TRANSACTION_NOT_FOUND: { code: 1301, type: 'TRANSACTION_NOT_FOUND' },
+  DOES_NOT_ENOUGH_BALANCE: { code: 1302, type: 'DOES_NOT_ENOUGH_BALANCE' },
+  AMOUNT_NOT_LESS_OR_EQUAL_ZERO: { code: 1303, type: 'AMOUNT_NOT_LESS_OR_EQUAL_ZERO' },
 };
 export default code;

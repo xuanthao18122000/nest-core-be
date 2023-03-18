@@ -14,7 +14,8 @@ import { Notification } from './notification.entity';
 import { Role } from './role.entity';
 import {Transaction} from "./transaction.entity";
 import {Rice} from "./rice.entity";
-import {IsNotEmpty} from "class-validator";
+import {IsEmpty, IsNotEmpty} from "class-validator";
+import {JoinColumn} from "typeorm";
 
 @Entity()
 export class User {
@@ -36,7 +37,7 @@ export class User {
   @Column()
   address_wallet: string;
 
-  @Column({type: 'double' })
+  @Column({type: 'double', unsigned: true })
   balance: number;
 
   @Column({type: 'int' })
@@ -56,14 +57,10 @@ export class User {
   })
   accounts: Account[];
 
-  @OneToMany(() => Notification, (notification) => notification.user, {
-    onDelete: 'SET NULL',
-  })
-  notifications: Notification[];
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notification: Notification[];
 
-  @OneToMany(() => Transaction, (transaction) => transaction.users, {
-    onDelete: 'SET NULL',
-  })
+  @OneToMany(() => Transaction, (transaction) => transaction.user)
   transactions: Transaction[];
 
   @ManyToMany(() => Role, (role) => role.user)
@@ -80,9 +77,14 @@ export class User {
   })
   role: Role[];
 
-  @ManyToMany(() => Rice, (rice) => rice.users)
+  @ManyToMany(() => Rice, (rice) => rice.user,{onDelete: 'NO ACTION', onUpdate: 'NO ACTION'})
+  rices: Rice[];
+  @ManyToMany(
+      () => Rice,
+      rice => rice.user, //optional
+      {onDelete: 'NO ACTION', onUpdate: 'NO ACTION'})
   @JoinTable({
-    name: 'rice_user',
+    name: 'user_rice',
     joinColumn: {
       name: 'user_id',
       referencedColumnName: 'id',
@@ -91,26 +93,42 @@ export class User {
       name: 'rice_id',
       referencedColumnName: 'id',
     },
-
   })
-  rice: Rice[];
+  rice?: Rice[];
 
 
 }
 
-@Entity('rice_user')
+@Entity('user_rice')
 export class UserRice {
   @Column()
   @IsNotEmpty()
-  @PrimaryColumn()
+  @PrimaryColumn({ name: 'user_id' })
   user_id: number;
 
   @Column()
   @IsNotEmpty()
-  @PrimaryColumn()
+  @PrimaryColumn({ name: 'rice_id' })
   rice_id: number;
 
-  @Column({type: 'int' })
+  @ManyToOne(
+      () => Rice,
+      rice => rice.users,
+      {onDelete: 'NO ACTION', onUpdate: 'NO ACTION'}
+  )
+  @JoinColumn([{ name: 'rice_id', referencedColumnName: 'id' }])
+  rice: Rice[];
+
+  @ManyToOne(
+      () => User,
+      user => user.rice,
+      {onDelete: 'NO ACTION', onUpdate: 'NO ACTION'}
+  )
+  @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
+  user: User[];
+
+  @Column({type: 'int', unsigned: true })
+  @IsEmpty()
   quantity: number;
 
   @CreateDateColumn({ name: 'created_at' })

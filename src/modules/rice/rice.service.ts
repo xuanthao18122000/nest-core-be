@@ -1,6 +1,6 @@
 import { QueryListDto } from "../../global/dto/query-list.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import {Rice} from "../../database/entities";
+import { Rice, UserRice} from "../../database/entities";
 import { Repository } from "typeorm";
 import code from "../../configs/code";
 import {RicePostDTO, RicePutDTO} from "./dto";
@@ -8,7 +8,9 @@ import {RicePostDTO, RicePutDTO} from "./dto";
 export class RiceService{
   constructor(
     @InjectRepository(Rice)
-    private readonly riceRepo: Repository<Rice>
+    private readonly riceRepo: Repository<Rice>,
+    @InjectRepository(UserRice)
+    private readonly userRiceRepo: Repository<UserRice>,
   ){}
 
   async getAllRice(query: QueryListDto){
@@ -55,19 +57,41 @@ export class RiceService{
     }
   }
 
-  async createRice(body: RicePostDTO){
+  async createRice(user, body: RicePostDTO){
     try{
-
+      const { name, totalQuantity, image } = body;
+      const rice = await this.riceRepo.create({
+        name,
+        images: '[]',
+        totalQuantity,
+        price: totalQuantity,
+      });
+      const newRice = await this.riceRepo.save(rice);
+      const newUserRice = await this.userRiceRepo.create({
+        rice_id: newRice.id,
+        user_id: user.id,
+        quantity: totalQuantity,
+      })
+      return await this.userRiceRepo.save(newUserRice);
       return true;
     }catch (error) {
       throw error;
     }
   }
 
-  async updateRice(body: RicePutDTO){
+  async updateRice(id: number, body: RicePutDTO){
     try{
+      const { name, image } = body;
+      const rice = await this.riceRepo.findOne({
+        where: { id }
+      })
+      if (!rice) {
+        throw code.RICE_NOT_FOUND.type;
+      }
 
-      return true;
+      rice.name = name;
+      rice.images = image;
+      return await this.riceRepo.save(rice);
     }catch (error) {
       throw error;
     }
