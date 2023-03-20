@@ -33,16 +33,42 @@ export class AuthController {
     private jwtService: JwtService,
   ) {}
 
-  @Post('login')
+  @Post('login-user')
   @ApiErrorResponse(code.WRONG_PASSWORD)
   @ApiErrorResponse(code.USER_NOT_FOUND)
-  async login(@Body() dto: LoginPostDTO) {
+  async loginUser(@Body() dto: LoginPostDTO) {
     try {
       const user = await this.authService.login(dto);
       if (!user) {
         return SendResponse.error({ msg: 'Email does not exist!' });
       }
+      const token = await this.authService.signTokenVerify(user);
+      const account = {
+        token: token['accessToken'],
+        user_id: user['id'],
+      };
+      const saveToken = await this.authService.saveTokenToDB(account);
+      return SendResponse.success(
+        {
+          token: token['accessToken'],
+          expriresIn: token['expiresIn'],
+        },
+        'Login success!',
+      );
+    } catch (err) {
+      return SendResponse.error(err);
+    }
+  }
 
+  @Post('login-admins')
+  @ApiErrorResponse(code.WRONG_PASSWORD)
+  @ApiErrorResponse(code.USER_NOT_FOUND)
+  async loginAdmin(@Body() dto: LoginPostDTO) {
+    try {
+      const user = await this.authService.login(dto);
+      if (!user) {
+        return SendResponse.error({ msg: 'Email does not exist!' });
+      }
       const token = await this.authService.signTokenVerify(user);
       const account = {
         token: token['accessToken'],
@@ -93,7 +119,7 @@ export class AuthController {
     }
   }
 
-  @Get('user-info')
+  @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async UserInfo(@Headers() headers, @GetUser() user, @Request() req) {
@@ -105,10 +131,12 @@ export class AuthController {
         email: user.email,
         fullName: user.fullName,
         phone: user.phone,
+        address_wallet: user.address_wallet,
+        balance: user.balance,
         role: listRole,
       };
 
-      return SendResponse.success([user_info], 'Get user info successful!');
+      return SendResponse.success(user_info, 'Get user info successful!');
     }catch(err){
       return SendResponse.error(err);
     }

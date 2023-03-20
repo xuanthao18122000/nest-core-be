@@ -35,7 +35,8 @@ const code = {
 
   //Rice
   RICE_NOT_FOUND: { code: 1101, type: 'RICE_NOT_FOUND' },
-  NOT_ENOUGH_RICE: { code: 1102, type: 'NOT_ENOUGH_RICE' },
+  RICE_EXIST: { code: 1102, type: 'RICE_EXIST' },
+  NOT_ENOUGH_RICE: { code: 1103, type: 'NOT_ENOUGH_RICE' },
   //Rice
   NOTIFICATION_NOT_FOUND: { code: 1201, type: 'NOTIFICATION_NOT_FOUND' },
   //Transaction

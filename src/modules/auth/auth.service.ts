@@ -55,14 +55,18 @@ export class AuthService {
   }
 
   async login(user: LoginPostDTO) {
-    const find_user = await this.usersService.findUserByEmail(user.email);
-    if (!find_user) {
-      throw 'USER_NOT_FOUND';
-    }
-    if (find_user && this.validateHash(user.password, find_user.password)) {
-      return find_user;
-    } else {
-      throw 'WRONG_PASSWORD';
+    try{
+      const find_user = await this.usersService.findUserByEmail(user.email);
+      if (!find_user) {
+        throw 'USER_NOT_FOUND';
+      }
+      if (find_user && this.validateHash(user.password, find_user.password)) {
+        return find_user;
+      } else {
+        throw 'WRONG_PASSWORD';
+      }
+    }catch (e) {
+      throw e;
     }
   }
 

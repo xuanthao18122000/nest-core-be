@@ -4,7 +4,7 @@ import { ErrorPayloadDto } from './dto/error_payload.dto';
 export class SendResponse {
   static success(data: any, msg = '') {
     const result = {
-      code: 0,
+      code: 200,
       success: true,
       data: data,
       msg: msg,

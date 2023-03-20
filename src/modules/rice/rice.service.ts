@@ -42,15 +42,30 @@ export class RiceService{
     }
   }
 
+  async findNameRice(name: string) {
+    try{
+      return await this.riceRepo.findOne({
+        where: { name }
+      })
+    }catch (error) {
+      throw error;
+    }
+  }
+
   async getRiceUser(email: string, query: QueryListDto) {
     try{
       const { keyword, page, perPage, sort } = query;
       const rice = await this.riceRepo.findAndCount({
-        where: {users: { email } },
+        where: {
+          user: {
+            email
+          }
+        },
         skip: (page - 1) * perPage,
         take: perPage,
         order: { id: sort as SORT },
       })
+      console.log({rice});
       return { list: rice[0], count: rice[1] };
     }catch (error) {
       throw error;

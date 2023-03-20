@@ -3,9 +3,10 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { RiceService } from "./rice.service";
 import { QueryListDto } from "../../global/dto/query-list.dto";
 import { SendResponse } from "../../utils/send-response";
-import {GetUser} from "../../decorators/auth.decorator";
+import { Auth, GetUser } from "../../decorators/auth.decorator";
 import {JwtAuthGuard} from "../../guard/jwt.guard";
 import {RicePostDTO, RicePutDTO} from "./dto";
+import code from "../../configs/code";
 
 @ApiTags('Rice')
 @Controller()
@@ -60,6 +61,7 @@ export class RiceController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async getRiceByUser(@GetUser() user, @Query() query: QueryListDto) {
+    console.log('abc');
     try{
       const email = user.email;
       query.page = !query.page ? 1 : query.page;
@@ -76,8 +78,9 @@ export class RiceController {
         pages,
         total,
         listRice: listRice.list,
-      },'Get list rice success!');
+      },'Get list rice by user successful!');
     }catch (error) {
+      console.log("BE: ", error);
       return SendResponse.error(error);
     }
   }
@@ -85,10 +88,15 @@ export class RiceController {
   @Post('create')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @Auth({roles: ['ADMIN']})
   async createRice(@GetUser() user, @Body() body: RicePostDTO) {
     try{
       // Call user service check user is admin
-      const email = user.email;
+      const name = body.name
+      const rice = await this.riceService.findNameRice(name);
+      if(rice){
+        throw code.RICE_EXIST.type;
+      }
       const result = await this.riceService.createRice(user, body);
 
       if(!result){
@@ -103,6 +111,7 @@ export class RiceController {
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @Auth({roles: ['ADMIN']})
   async updateRice(@Param('id') id: number, @Body() body: RicePutDTO) {
     try{
       const result = await this.riceService.updateRice( id, body);
@@ -119,6 +128,7 @@ export class RiceController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @Auth({roles: ['ADMIN']})
   async deleteRice(@Param('id') id: number) {
     try{
       const result = await this.riceService.deleteRice(id);

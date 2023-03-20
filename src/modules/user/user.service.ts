@@ -142,7 +142,7 @@ export class UserService   {
         phone,
         fullName,
         code,
-        address_wallet,
+        address_wallet: address_wallet,
         balance: 0,
         role: [findRole],
       });

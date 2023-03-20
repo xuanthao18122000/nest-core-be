@@ -19,7 +19,7 @@ export class Rice {
     @PrimaryGeneratedColumn({ type: 'bigint' })
     id: number;
 
-    @Column()
+    @Column({unique: true})
     name: string;
 
     @Column()
@@ -31,6 +31,8 @@ export class Rice {
     @Column({ type: 'double' })
     price: number;
 
+    // @Column()
+    // status_price: string;
 
     @CreateDateColumn({ name: 'created_at' })
     public created_at: Date;

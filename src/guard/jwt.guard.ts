@@ -32,7 +32,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
           token,
         },
       });
-
       if (user && account) {
         return user;
       } else {
