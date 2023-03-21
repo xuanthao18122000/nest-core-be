@@ -7,6 +7,7 @@ import { Auth, GetUser } from "../../decorators/auth.decorator";
 import {JwtAuthGuard} from "../../guard/jwt.guard";
 import {RicePostDTO, RicePutDTO} from "./dto";
 import code from "../../configs/code";
+import {User} from "../../database/entities";
 
 @ApiTags('Rice')
 @Controller()
@@ -19,7 +20,7 @@ export class RiceController {
   @Get('list')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  async getAllRice(@Query() query: QueryListDto) {
+  async getAllRice(@Query() query: QueryListDto, @GetUser() user: User) {
     try{
       query.page = !query.page ? 1 : query.page;
       query.perPage = !query.perPage ? 10 : query.perPage;
@@ -60,14 +61,13 @@ export class RiceController {
   @Get('by-user/list')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  async getRiceByUser(@GetUser() user, @Query() query: QueryListDto) {
+  async getRiceByUser(@GetUser() user: User, @Query() query: QueryListDto) {
     console.log('abc');
     try{
-      const email = user.email;
       query.page = !query.page ? 1 : query.page;
       query.perPage = !query.perPage ? 10 : query.perPage;
       query.sort ? query.sort.toUpperCase() : 'DESC'
-      const listRice = await this.riceService.getRiceUser(email, query);
+      const listRice = await this.riceService.getRiceUser(user, query);
 
       const pagi = (listRice.count / query.perPage) | 0;
       const pages = listRice.count % query.perPage == 0 ? pagi : pagi + 1;
@@ -88,7 +88,7 @@ export class RiceController {
   @Post('create')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Auth({roles: ['ADMIN']})
+  // @Auth({roles: ['ADMIN']})
   async createRice(@GetUser() user, @Body() body: RicePostDTO) {
     try{
       // Call user service check user is admin

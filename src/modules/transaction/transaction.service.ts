@@ -26,6 +26,7 @@ export class TransactionService {
                     type: true,
                     description: true,
                     image: true,
+                    created_at: true,
                 },
                 skip: (page - 1) * perPage,
                 take: perPage,

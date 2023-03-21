@@ -124,9 +124,8 @@ export class AuthController {
   @ApiBearerAuth()
   async UserInfo(@Headers() headers, @GetUser() user, @Request() req) {
     try{
-      const findUser = await UserService.StaticFindUserById(req.user);
+      const findUser = await this.userService.findUserByEmail(user.email);
       const listRole = findUser.role.map((o) => o.role_key);
-      // const token = headers.authorization.split('Bearer ');
       const user_info = {
         email: user.email,
         fullName: user.fullName,

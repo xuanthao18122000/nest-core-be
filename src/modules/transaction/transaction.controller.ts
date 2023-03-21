@@ -13,12 +13,14 @@ import {Notification, Transaction, User} from "../../database/entities";
 import {NotificationService} from "../notification/notification.service";
 import { DataSource } from 'typeorm';
 import {BuyRiceExchangesDTO} from "./dto/rice-post.dto";
+import {RiceService} from "../rice/rice.service";
 
 @ApiTags('Transaction')
 @Controller()
 export class TransactionController {
   constructor(
     private readonly transactionService: TransactionService,
+    private readonly riceService: RiceService,
     private readonly notificationService: NotificationService,
     private readonly userService: UserService,
   ){}
@@ -210,6 +212,8 @@ export class TransactionController {
       // Check email exist
       const seller = await this.userService.findAdmin();
       const userRice = await this.userService.findAdminByRice(rice_id);
+      const rice = await this.riceService.findRiceById(rice_id);
+      const priceRice = rice.price * amount;
       if(!userRice) {
         throw code.RICE_NOT_FOUND.type;
       }
@@ -219,10 +223,14 @@ export class TransactionController {
       if(!seller){
         throw code.EMAIL_NOT_EXIST.type;
       }
+      if(buyer.balance < priceRice){
+        throw code.DOES_NOT_ENOUGH_BALANCE.type;
+      }
       if(buyer.email === seller.email){
         throw code.NOT_YOUR_EMAIL.type;
       }
-
+      // Plus and Minute money
+      await this.userService.transferMoney(buyer.email, seller.email, priceRice);
       // Plus and Minute rice
       await this.userService.buyRice(buyer.email, seller.email, amount, rice_id);
 

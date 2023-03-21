@@ -1,6 +1,6 @@
 import { QueryListDto } from "../../global/dto/query-list.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Rice, UserRice} from "../../database/entities";
+import {Rice, User, UserRice} from "../../database/entities";
 import { Repository } from "typeorm";
 import code from "../../configs/code";
 import {RicePostDTO, RicePutDTO} from "./dto";
@@ -21,7 +21,19 @@ export class RiceService{
         take: perPage,
         order: { id: sort as SORT },
       })
-      return { list: rice[0], count: rice[1] };
+      const listRice = rice[0];
+      for(let i = 0; i < listRice.length; i++){
+        const userRice = await this.userRiceRepo.findOne( {
+          where: {
+            rice_id: listRice[i].id,
+            user_id: 1,
+          }
+        })
+        // @ts-ignore
+        listRice[i].quantity = userRice.quantity;
+      }
+
+      return { list: listRice, count: rice[1] };
     }catch (error) {
       throw error;
     }
@@ -42,6 +54,16 @@ export class RiceService{
     }
   }
 
+  async findRiceById(id: number) {
+    try{
+      return await this.riceRepo.findOne({
+        where: { id: id }
+      })
+    }catch (error) {
+      throw error;
+    }
+  }
+
   async findNameRice(name: string) {
     try{
       return await this.riceRepo.findOne({
@@ -52,21 +74,32 @@ export class RiceService{
     }
   }
 
-  async getRiceUser(email: string, query: QueryListDto) {
+  async getRiceUser(user: User, query: QueryListDto) {
     try{
       const { keyword, page, perPage, sort } = query;
       const rice = await this.riceRepo.findAndCount({
         where: {
           user: {
-            email
+            id: user.id,
           }
         },
         skip: (page - 1) * perPage,
         take: perPage,
         order: { id: sort as SORT },
       })
-      console.log({rice});
-      return { list: rice[0], count: rice[1] };
+
+      const listRice = rice[0];
+      for(let i = 0; i < listRice.length; i++){
+        const userRice = await this.userRiceRepo.findOne( {
+          where: {
+            rice_id: listRice[i].id,
+            user_id: user.id,
+          }
+        })
+        // @ts-ignore
+        listRice[i].quantity = userRice.quantity;
+      }
+      return { list: listRice, count: rice[1] };
     }catch (error) {
       throw error;
     }
@@ -80,6 +113,7 @@ export class RiceService{
         images: '[]',
         totalQuantity,
         price: totalQuantity,
+        status_price: 'up',
       });
       const newRice = await this.riceRepo.save(rice);
       const newUserRice = await this.userRiceRepo.create({

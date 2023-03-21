@@ -98,6 +98,7 @@ export class UserService   {
     }
   }
 
+
   async findUserById(id: number): Promise<User> {
     const user = this.userRepo.findOne({
       where: { id },

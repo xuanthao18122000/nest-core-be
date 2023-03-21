@@ -18,14 +18,14 @@ import { extname } from 'path'
 @Controller()
 export class ImageController {
     @Post('upload')
-    @UseInterceptors(FileInterceptor('file', {
+    @UseInterceptors(FileInterceptor('image', {
         storage: diskStorage({
-            destination: 'src/upload/images'
-            , filename: (req, file, cb) => {
+            destination: 'src/upload/temp'
+            , filename: (req, image, cb) => {
                 // Generating a 32 random chars long string
                 const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('')
                 //Calling the callback passing the random name generated with the original extension name
-                cb(null, `${randomName}${extname(file.originalname)}`)
+                cb(null, `${randomName}${extname(image.originalname)}`)
             }
         })
     }))
@@ -34,15 +34,15 @@ export class ImageController {
             // .addFileTypeValidator({
             //     fileType: 'jpg',
             // })
-            // .addMaxSizeValidator({
-            //     maxSize: 1000
-            // })
+            .addMaxSizeValidator({
+                maxSize: 100000
+            })
             .build({
                 errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
             }),
-    ) file: Express.Multer.File) {
-        console.log(file);
-        return SendResponse.success([], 'Upload image successful!')
+    ) image: Express.Multer.File) {
+        console.log(image);
+        return SendResponse.success([{imageName: image.filename}], 'Upload image successful!')
     }
 
 

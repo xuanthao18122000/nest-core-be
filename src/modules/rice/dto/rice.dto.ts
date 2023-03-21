@@ -16,10 +16,10 @@ export class RicePostDTO {
     @IsString()
     name: string;
 
-    @ApiProperty({ example: 'image' })
-    @Expose()
-    @IsNotEmpty()
-    @IsString()
+    // @ApiProperty({ example: 'image' })
+    // @Expose()
+    // @IsNotEmpty()
+    // @IsString()
     image: string;
 
 

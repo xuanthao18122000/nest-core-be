@@ -31,8 +31,8 @@ export class Rice {
     @Column({ type: 'double' })
     price: number;
 
-    // @Column()
-    // status_price: string;
+    @Column()
+    status_price: string;
 
     @CreateDateColumn({ name: 'created_at' })
     public created_at: Date;
