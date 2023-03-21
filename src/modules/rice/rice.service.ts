@@ -107,10 +107,10 @@ export class RiceService{
 
   async createRice(user, body: RicePostDTO){
     try{
-      const { name, totalQuantity, image } = body;
+      const { name, totalQuantity, images } = body;
       const rice = await this.riceRepo.create({
         name,
-        images: '[]',
+        images,
         totalQuantity,
         price: totalQuantity,
         status_price: 'up',
