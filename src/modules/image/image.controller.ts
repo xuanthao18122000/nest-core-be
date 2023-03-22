@@ -1,9 +1,9 @@
 import {
     Body,
-    Controller, FileTypeValidator, HttpStatus,
+    Controller, Delete, FileTypeValidator, HttpStatus,
     MaxFileSizeValidator,
     ParseFilePipe, ParseFilePipeBuilder,
-    Post,
+    Post, Req,
     UploadedFile, UploadedFiles,
     UseInterceptors
 } from "@nestjs/common";
@@ -12,11 +12,16 @@ import {ApiTags} from "@nestjs/swagger";
 import {diskStorage} from "multer";
 import {SendResponse} from "../../utils/send-response";
 import { extname } from 'path'
+import {ImageService} from "./image.service";
 
 
 @ApiTags('Image')
 @Controller()
 export class ImageController {
+    constructor(
+        private readonly imageService: ImageService
+    ) {
+    }
     @Post('upload')
     @UseInterceptors(FileInterceptor('image', {
         storage: diskStorage({
@@ -34,16 +39,21 @@ export class ImageController {
             // .addFileTypeValidator({
             //     fileType: 'jpg',
             // })
-            .addMaxSizeValidator({
-                maxSize: 100000
-            })
+            // .addMaxSizeValidator({
+            //     maxSize: 100000
+            // })
             .build({
                 errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
             }),
     ) image: Express.Multer.File) {
-        console.log(image);
         return SendResponse.success([{imageName: image.filename}], 'Upload image successful!')
     }
 
+    @Delete('delete')
+    async deleteImageTemp(@Body() body, @Req() req) {
+        const imageName = body.data[0].imageName;
+        await this.imageService.deleteImageTemp(imageName);
+        return SendResponse.success([], 'Delete image successful!')
+    }
 
 }

@@ -34,6 +34,9 @@ export class User {
   @Column()
   phone: number;
 
+  @Column({nullable: true})
+  avatar: string;
+
   @Column()
   address_wallet: string;
 

@@ -1,5 +1,5 @@
 import {
-  IsEmail,
+  IsEmail, IsEmpty,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -60,6 +60,22 @@ export class RegisterPostDTO {
   address: string;
 
   balance: number;
+
+}
+
+export class UpdateUserDTO {
+  @ApiProperty({ example: 'fullName' })
+  @Expose()
+  @IsNotEmpty()
+  @IsString()
+  fullName: string;
+
+  @ApiProperty({ example: 'avatar' })
+  @Expose()
+  @IsString()
+  avatar: string;
+
+
 
 }
 

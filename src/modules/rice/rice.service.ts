@@ -4,6 +4,8 @@ import {Rice, User, UserRice} from "../../database/entities";
 import { Repository } from "typeorm";
 import code from "../../configs/code";
 import {RicePostDTO, RicePutDTO} from "./dto";
+import * as fs from 'fs';
+import { join } from 'path';
 
 export class RiceService{
   constructor(
@@ -21,7 +23,7 @@ export class RiceService{
         take: perPage,
         order: { id: sort as SORT },
       })
-      const listRice = rice[0];
+      let listRice = rice[0];
       for(let i = 0; i < listRice.length; i++){
         const userRice = await this.userRiceRepo.findOne( {
           where: {
@@ -32,6 +34,10 @@ export class RiceService{
         // @ts-ignore
         listRice[i].quantity = userRice.quantity;
       }
+      listRice = listRice.filter( rice => {
+        // @ts-ignore
+        return rice.quantity > 0
+      })
 
       return { list: listRice, count: rice[1] };
     }catch (error) {
@@ -88,7 +94,7 @@ export class RiceService{
         order: { id: sort as SORT },
       })
 
-      const listRice = rice[0];
+      let listRice = rice[0];
       for(let i = 0; i < listRice.length; i++){
         const userRice = await this.userRiceRepo.findOne( {
           where: {
@@ -99,6 +105,10 @@ export class RiceService{
         // @ts-ignore
         listRice[i].quantity = userRice.quantity;
       }
+      listRice = listRice.filter( rice => {
+        // @ts-ignore
+        return rice.quantity > 0
+      })
       return { list: listRice, count: rice[1] };
     }catch (error) {
       throw error;
@@ -121,11 +131,28 @@ export class RiceService{
         user_id: user.id,
         quantity: totalQuantity,
       })
-      return await this.userRiceRepo.save(newUserRice);
-      return true;
+      await this.userRiceRepo.save(newUserRice);
+      await this.moveFile(images);
+      return true
     }catch (error) {
+      console.log(error)
       throw error;
     }
+  }
+
+  async moveFile(imageName) {
+    const tempPath = join(__dirname,'../../..', 'src/upload/temp', imageName);
+    const imgPath = join(__dirname,'../../..', 'src/upload/images', imageName);
+
+    console.log(join(__dirname,'../../..', 'src/upload/temp', imageName))
+    fs.rename(tempPath, imgPath, function (err) {
+      if (err) {
+        console.log(err)
+        throw err;
+      } else {
+        console.log("Successfully moved the file!");
+      }
+    });
   }
 
   async updateRice(id: number, body: RicePutDTO){

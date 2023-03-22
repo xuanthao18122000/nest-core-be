@@ -136,13 +136,21 @@ export class TransactionController {
       const transactionReceiver = await this.transactionService.createHistoryTransactionReceiver(sender, receiver, amount, description);
 
       // Create notifications to sender and receiver
-      const title = 'receive_money';
-      const image = '[]';
-      const content = `Bạn đã nhận được ${amount} VNĐ từ tài khoản ${receiver.address_wallet}`;
-      const notification = await this.notificationService.createNotification(title, image, description, content , receiver);
+      let title = `Đã Gửi ${amount} USDT Thành Công`;
+      let type = 'send_money';
+      let image = '[]';
+      let content = `Bạn đã gửi ${amount} VNĐ từ đến tài khoản người dùng ${receiver.fullName} có địa chỉ ví ${receiver.address_wallet}`;
+      const notificationSender = await this.notificationService.createNotification(type, title, image, description, content , sender, transactionSender.id);
+
+      title = `Nhận Được ${amount} USDT Thành Công`;
+      type = 'receive_money';
+      image = '[]';
+      content = `Bạn đã nhận được ${amount} VNĐ từ tài khoản người dùng ${sender.fullName} có địa chỉ ví ${sender.address_wallet}`;
+      const notificationReceiver = await this.notificationService.createNotification(type, title, image, description, content , receiver, transactionReceiver.id);
 
       return SendResponse.success([], 'Transfer user success!');
     }catch (error) {
+      console.log(error)
       return SendResponse.error(error);
     }
   }
@@ -182,10 +190,17 @@ export class TransactionController {
       const transactionReceiver = await this.transactionService.createHistoryTransactionReceiver(sender, receiver, amount, description);
 
       // Create notifications to sender and receiver
-      const title = 'receive_money';
-      const image = '[]';
-      const content = `Bạn đã nhận được ${amount} VNĐ từ tài khoản ${receiver.address_wallet}`;
-      const notification = await this.notificationService.createNotification(title, image, description, content , receiver);
+      let title = `Đã Gửi ${amount} USDT Thành Công`;
+      let type = 'send_money';
+      let image = '[]';
+      let content = `Bạn đã gửi ${amount} VNĐ từ đến tài khoản Administrator có địa chỉ ví ${receiver.address_wallet}`;
+      const notificationSender = await this.notificationService.createNotification(type, title, image, description, content , sender, transactionSender.id);
+
+      title = `Nhận Được ${amount} USDT Thành Công`;
+      type = 'receive_money';
+      image = '[]';
+      content = `Bạn đã nhận được ${amount} VNĐ từ tài khoản người dùng ${sender.fullName} có địa chỉ ví ${sender.address_wallet}`;
+      const notificationReceiver = await this.notificationService.createNotification(type, title, image, description, content , receiver, transactionReceiver.id);
 
       return SendResponse.success([], 'Transfer user success!');
     }catch (error) {
@@ -239,15 +254,17 @@ export class TransactionController {
       const transactionReceiver = await this.transactionService.createHistoryTransactionSeller(buyer, seller, amount, description);
 
       // Create notifications to sender and seller
-      let title = 'buy_rice';
+      let title = `Mua ${amount} Gạo Thành Công`;
+      let type = 'buy_rice';
       let image = '[]';
-      let content = `Bạn đã mua thành công ${amount} gạo từ tài khoản ${seller.address_wallet}`;
-      await this.notificationService.createNotificationRice(title, image, description, content , buyer);
+      let content = `Bạn đã mua thành công ${amount} gạo từ sàn có địa chỉ ví ${seller.address_wallet}`;
+      await this.notificationService.createNotificationRice(type, title, image, description, content , buyer, transactionSender.id);
 
-      title = 'sell_rice';
+      title = `Bán ${amount} Gạo Thành Công`;
+      type = 'sell_rice';
       image = '[]';
-      content = `Bạn đã bán thành công ${amount} gạo cho tài khoản ${buyer.address_wallet} của chủ sở hữu ${buyer.fullName}`;
-       await this.notificationService.createNotificationRice(title, image, description, content , seller);
+      content = `Bạn đã bán thành công ${amount} gạo cho tài khoản có địa chỉ ví ${buyer.address_wallet} của chủ sở hữu ${buyer.fullName}`;
+       await this.notificationService.createNotificationRice(type, title, image, description, content , seller, transactionReceiver.id);
 
       return SendResponse.success([], 'Buy rice successful!');
     }catch (error) {
@@ -260,7 +277,7 @@ export class TransactionController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async sellRiceExchanges(@GetUser() user: User, @Body() body: BuyRiceExchangesDTO) {
-
+    return SendResponse.success([], 'Sell rice successful!');
   }
 
 }

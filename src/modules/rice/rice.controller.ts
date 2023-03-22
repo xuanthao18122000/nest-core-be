@@ -41,6 +41,7 @@ export class RiceController {
       },'Get list rice success!');
 
     }catch (error) {
+      console.log(error)
       return SendResponse.error(error);
     }
   }
@@ -62,7 +63,6 @@ export class RiceController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async getRiceByUser(@GetUser() user: User, @Query() query: QueryListDto) {
-    console.log('abc');
     try{
       query.page = !query.page ? 1 : query.page;
       query.perPage = !query.perPage ? 10 : query.perPage;

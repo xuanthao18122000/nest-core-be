@@ -129,7 +129,7 @@ export class TransactionService {
         }
     }
 
-    async createHistoryTransactionBuyer(buyer: User, receiver: User, amount: number, description: string){
+    async createHistoryTransactionBuyer(buyer: User, receiver: User, amount: number, description: string): Promise<Transaction>{
         try{
             const newTransaction = await this.transactionRepo.create({
                 type: 'buy_rice',
@@ -152,7 +152,7 @@ export class TransactionService {
         }
     }
 
-    async createHistoryTransactionSeller(seller: User, receiver: User, amount: number, description: string){
+    async createHistoryTransactionSeller(seller: User, receiver: User, amount: number, description: string): Promise<Transaction>{
         try{
             const newTransaction = await this.transactionRepo.create({
                 type: 'sell_rice',

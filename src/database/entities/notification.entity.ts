@@ -17,6 +17,9 @@ export class Notification {
     id: number;
 
     @Column()
+    type: string;
+
+    @Column()
     title: string;
 
     @Column()
@@ -30,6 +33,9 @@ export class Notification {
 
     @Column()
     is_read: boolean;
+
+    @Column()
+    transaction_id: number;
 
     @CreateDateColumn({ name: 'created_at' })
     public created_at: Date;

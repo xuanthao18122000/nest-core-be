@@ -4,6 +4,8 @@ import { QueryListDto } from "../../global/dto/query-list.dto";
 import { NotificationService } from "./notification.service";
 import { SendResponse } from "../../utils/send-response";
 import {JwtAuthGuard} from "../../guard/jwt.guard";
+import {GetUser} from "../../decorators/auth.decorator";
+import {User} from "../../database/entities";
 
 @ApiTags('Notification')
 @Controller()
@@ -15,13 +17,13 @@ export class NotificationController {
   @Get('list')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  async getAllNotification(@Query() query: QueryListDto){
+  async getAllNotification(@Query() query: QueryListDto, @GetUser() user: User){
     try{
       query.perPage = !query.perPage ? 10 : query.perPage;
       query.page = !query.page ? 1 : query.page;
       query.sort ? query.sort.toUpperCase() : 'DESC';
 
-      const listNotification = await this.notificationService.getAllNotification(query);
+      const listNotification = await this.notificationService.getAllNotification(query, user.id);
 
       const pagi = (listNotification.count / query.perPage) | 0;
       const pages = listNotification.count % query.perPage == 0 ? pagi : pagi + 1;

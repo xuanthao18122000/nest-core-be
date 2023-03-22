@@ -27,9 +27,10 @@ import {UserService} from "./modules/user/user.service";
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    ServeStaticModule.forRoot({
-      // rootPath: join(__dirname, '..', 'public'),
-    }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'src/upload/images'),
+    //   exclude: ['/api*'],
+    // }),
     MailerModule.forRoot({
       transport: {
         host: process.env.MAIL_HOST,

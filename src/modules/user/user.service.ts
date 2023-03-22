@@ -2,7 +2,7 @@ import {Inject, Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {User, UserRice} from 'src/database/entities/user.entity';
 import {DataSource, Repository} from 'typeorm';
-import {ChangePasswordDTO, ForgotPasswordDTO, RegisterPostDTO} from '../auth/dto/index';
+import {ChangePasswordDTO, ForgotPasswordDTO, RegisterPostDTO, UpdateUserDTO} from '../auth/dto/index';
 import { appDataSource } from 'src/configs/datasource';
 import { UtilsProvider } from 'src/utils/provider';
 import {RoleService} from "../role/role.service";
@@ -13,6 +13,8 @@ import { MailerService } from "@nestjs-modules/mailer";
 import * as md5 from 'md5';
 import * as bcrypt from "bcrypt";
 import { ModuleRef } from '@nestjs/core';
+import {join} from "path";
+import * as fs from "fs";
 
 @Injectable()
 export class UserService   {
@@ -170,6 +172,38 @@ export class UserService   {
     return randomString;
   };
 
+  async updateUserInfo(email: string, body: UpdateUserDTO): Promise<User> {
+    try{
+      const { fullName, avatar } = body;
+      const user = await this.userRepo.findOne({
+        where: { email }
+      });
+      if(avatar) user.avatar = avatar;
+      user.fullName = fullName;
+
+      const save = await this.userRepo.save(user);
+      await this.moveFile(avatar);
+      return save;
+    }catch (e) {
+      throw e;
+    }
+  }
+
+  async moveFile(imageName) {
+    const tempPath = join(__dirname,'../../..', 'src/upload/temp', imageName);
+    const imgPath = join(__dirname,'../../..', 'src/upload/images', imageName);
+
+    console.log(join(__dirname,'../../..', 'src/upload/temp', imageName))
+    fs.rename(tempPath, imgPath, function (err) {
+      if (err) {
+        console.log(err)
+        throw err;
+      } else {
+        console.log("Successfully moved the file!");
+      }
+    });
+  }
+
   async getAllUser(query: QueryListDto) {
     try{
       const { keyword, page, perPage, sort } = query;
@@ -180,6 +214,7 @@ export class UserService   {
           address_wallet: true,
           balance: true,
           email: true,
+          avatar: true,
           phone: true,
           created_at: true,
         },

@@ -11,13 +11,18 @@ export class NotificationService{
     private readonly notificationRepo: Repository<Notification>
   ) {}
 
-  async getAllNotification(query: QueryListDto){
+  async getAllNotification(query: QueryListDto, id_user : number){
     try{
       const { keyword, page, perPage, sort } = query;
       const notification = await this.notificationRepo.findAndCount({
         skip: (page - 1) * perPage,
         take: perPage,
         order: { id: sort as SORT },
+        where: {
+          user: {
+            id: id_user
+          }
+        }
       });
       return { list: notification[0], count: notification[1] };
     }catch(error) {
@@ -58,13 +63,15 @@ export class NotificationService{
     }
   }
 
-  async createNotification(title: string, image: string, description: string, content: string, receiver : User){
+  async createNotification(type: string, title: string, image: string, description: string, content: string, receiver : User, transaction_id){
     try {
       const notification = await this.notificationRepo.create({
+        type,
         title,
         image,
         description,
         content,
+        transaction_id,
         is_read: false,
         user: receiver,
       })
@@ -74,14 +81,16 @@ export class NotificationService{
     }
   }
 
-  async createNotificationRice(title: string, image: string, description: string, content: string,user : User){
+  async createNotificationRice(type: string, title: string, image: string, description: string, content: string,user : User, transaction_id){
     try {
       const notification = await this.notificationRepo.create({
+        type,
         title,
         image,
         description,
         content,
         is_read: false,
+        transaction_id,
         user: user,
       })
       return await this.notificationRepo.save(notification);

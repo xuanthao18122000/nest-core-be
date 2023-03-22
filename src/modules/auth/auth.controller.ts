@@ -8,12 +8,12 @@ import {
   Param,
   Delete,
   UseGuards,
-  Request
+  Request, Put
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
-import {ChangePasswordDTO, ForgotPasswordDTO, LoginPostDTO, RegisterPostDTO} from './dto';
+import {ChangePasswordDTO, ForgotPasswordDTO, LoginPostDTO, RegisterPostDTO, UpdateUserDTO} from './dto';
 import { SendResponse } from '../../utils/send-response';
 import { ApiErrorResponse } from '../../schema/api_error_response';
 import code from '../../configs/code';
@@ -119,6 +119,23 @@ export class AuthController {
     }
   }
 
+  @Put('update-profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async updateUser(@Body() body: UpdateUserDTO, @GetUser() user) {
+    try {
+      const updated = await this.userService.updateUserInfo(user['email'], body);
+      if (updated) {
+        return SendResponse.success([], 'Update user successful!');
+      } else {
+        return SendResponse.error('BACKEND');
+      }
+    } catch (e) {
+      console.log(e)
+      return SendResponse.error(e);
+    }
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -130,6 +147,7 @@ export class AuthController {
         email: user.email,
         fullName: user.fullName,
         phone: user.phone,
+        avatar: user.avatar,
         address_wallet: user.address_wallet,
         balance: user.balance,
         role: listRole,
