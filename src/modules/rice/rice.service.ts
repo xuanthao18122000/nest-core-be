@@ -11,6 +11,8 @@ export class RiceService{
   constructor(
     @InjectRepository(Rice)
     private readonly riceRepo: Repository<Rice>,
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
     @InjectRepository(UserRice)
     private readonly userRiceRepo: Repository<UserRice>,
   ){}
@@ -167,6 +169,32 @@ export class RiceService{
 
       rice.name = name;
       rice.images = image;
+      return await this.riceRepo.save(rice);
+    }catch (error) {
+      throw error;
+    }
+  }
+
+  async updatePriceRice(rice_id: number) {
+    try{
+      const rice = await this.riceRepo.findOne({
+        where: { id: rice_id }
+      })
+      const user = await this.userRepo.findOne({
+        where: {
+          role: {
+            role_key: 'ADMIN',
+          },
+        },
+      })
+      const userRice = await this.userRiceRepo.findOne({
+        where: {
+          rice_id,
+          user_id: user.id,
+        }
+      })
+
+      rice.price = rice.totalQuantity / userRice.quantity;
       return await this.riceRepo.save(rice);
     }catch (error) {
       throw error;

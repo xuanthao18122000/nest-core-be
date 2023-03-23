@@ -20,7 +20,7 @@ async function bootstrap() {
       disableErrorMessages: true,
     }),
   );
-
+    app.enableCors();
     app.useStaticAssets(join(__dirname, '..', 'src/upload/images'), {prefix: '/api/public/image'});
   //Swagger
   const config = new DocumentBuilder()
@@ -33,6 +33,6 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   await app.listen(3000);
-  app.enableCors();
+
 }
 bootstrap();

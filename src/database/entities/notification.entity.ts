@@ -22,6 +22,9 @@ export class Notification {
     @Column()
     title: string;
 
+    // @Column()
+    // status: string;
+
     @Column()
     image: string;
 

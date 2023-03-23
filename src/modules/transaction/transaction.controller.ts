@@ -248,6 +248,7 @@ export class TransactionController {
       await this.userService.transferMoney(buyer.email, seller.email, priceRice);
       // Plus and Minute rice
       await this.userService.buyRice(buyer.email, seller.email, amount, rice_id);
+      await this.riceService.updatePriceRice(rice_id);
 
       // Create history transaction
       const transactionSender = await this.transactionService.createHistoryTransactionBuyer(buyer, seller, amount, description);
