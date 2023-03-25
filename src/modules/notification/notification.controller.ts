@@ -54,6 +54,20 @@ export class NotificationController {
     }
   }
 
+  @Get('unread/get')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getUnreadNotification(@GetUser() user: User){
+    try{
+      const user_id = user['id'];
+      const notification = await this.notificationService.getUnreadNotification(user_id);
+
+      return SendResponse.success(notification, 'Get unread notification successful!')
+    }catch (error) {
+      return SendResponse.error(error);
+    }
+  }
+
   @Get('read/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
