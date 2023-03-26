@@ -1,10 +1,11 @@
 import {
+    IsDecimal,
     IsEmail,
     IsInt,
     IsNotEmpty,
     IsNumber,
-    IsString,
-} from 'class-validator';
+    IsString
+} from "class-validator";
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
@@ -30,6 +31,11 @@ export class RicePostDTO {
     @IsInt()
     totalQuantity: number;
 
+    @ApiProperty({ example: 'totalQuantity' })
+    @Expose()
+    @IsNotEmpty()
+    @Type(() => Number)
+    @IsNumber()
     price: number;
 
 

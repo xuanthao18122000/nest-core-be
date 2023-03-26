@@ -26,6 +26,7 @@ export class RiceService{
         order: { id: sort as SORT },
       })
       let listRice = rice[0];
+      // Fix find Admin
       for(let i = 0; i < listRice.length; i++){
         const userRice = await this.userRiceRepo.findOne( {
           where: {
@@ -118,13 +119,14 @@ export class RiceService{
   }
 
   async createRice(user, body: RicePostDTO){
+    console.log(body);
     try{
-      const { name, totalQuantity, images } = body;
+      const { name, totalQuantity, images, price } = body;
       const rice = await this.riceRepo.create({
         name,
         images,
         totalQuantity,
-        price: totalQuantity,
+        price,
         status_price: 'up',
       });
       const newRice = await this.riceRepo.save(rice);
@@ -143,18 +145,25 @@ export class RiceService{
   }
 
   async moveFile(imageName) {
-    const tempPath = join(__dirname,'../../..', 'src/upload/temp', imageName);
-    const imgPath = join(__dirname,'../../..', 'src/upload/images', imageName);
-
-    console.log(join(__dirname,'../../..', 'src/upload/temp', imageName))
-    fs.rename(tempPath, imgPath, function (err) {
-      if (err) {
-        console.log(err)
-        throw err;
-      } else {
-        console.log("Successfully moved the file!");
+    try{
+      const tempPath = join(__dirname,'../../..', 'src/upload/temp', imageName);
+      const imgPath = join(__dirname,'../../..', 'src/upload/images', imageName);
+      // Tim file neu k co thi return
+      if(tempPath){
+        return fs.rename(tempPath, imgPath, function (err) {
+          if (err) {
+            console.log(err)
+            throw err;
+          } else {
+            console.log("Successfully moved the file!");
+          }
+        });
       }
-    });
+      return
+    }catch (e) {
+      throw e;
+    }
+
   }
 
   async updateRice(id: number, body: RicePutDTO){
