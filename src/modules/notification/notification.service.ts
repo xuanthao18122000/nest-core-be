@@ -30,6 +30,22 @@ export class NotificationService{
     }
   }
 
+  async getUnreadNotification(id: number){
+    try{
+      const notification = await this.notificationRepo.findAndCount({
+        where: {
+          is_read: false,
+          user: {
+            id
+          }
+        }
+      });
+      return { count: notification[1] };
+    }catch(error) {
+      throw error;
+    }
+  }
+
   async getOneNotification(id: number) {
     try{
       const oneRice = await this.notificationRepo.findOne({

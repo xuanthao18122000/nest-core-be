@@ -63,6 +63,22 @@ export class RiceService{
     }
   }
 
+  async getAllBalanceRice() {
+    try{
+      const rice = await this.riceRepo.find({
+        select: { totalQuantity: true }
+      })
+
+      let balance = 0;
+      for(let item of rice){
+        balance += item.totalQuantity
+      }
+      return {balance};
+    }catch (error) {
+      throw error;
+    }
+  }
+
   async findRiceById(id: number) {
     try{
       return await this.riceRepo.findOne({

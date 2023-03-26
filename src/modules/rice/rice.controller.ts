@@ -85,6 +85,20 @@ export class RiceController {
     }
   }
 
+  @Get('balance/all')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getBalanceSystem() {
+    try{
+      const balance = await this.riceService.getAllBalanceRice();
+
+      return SendResponse.success( balance,'Get balance rice successful!')
+
+    }catch (error) {
+      return SendResponse.error(error);
+    }
+  }
+
   @Post('create')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

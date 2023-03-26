@@ -62,15 +62,19 @@ export class UserController {
     }
   }
 
-  // @Post('create')
-  // async createUser() {
-  //
-  // }
+  @Get('balance/all')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getBalanceSystem() {
+    try{
+      const balance = await this.userService.getAllBalanceSystem();
 
-  // @Put(':id')
-  // async updateUser(){
-  //
-  // }
+      return SendResponse.success( balance,'Get list users success!')
+
+    }catch (error) {
+      return SendResponse.error(error);
+    }
+  }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)

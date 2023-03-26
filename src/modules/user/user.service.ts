@@ -29,6 +29,24 @@ export class UserService   {
   ) {
   }
 
+  async getAllBalanceSystem() {
+    try{
+      const users = await this.userRepo.find({
+        select: {
+          balance: true,
+        }
+      });
+      let balance = 0;
+      for(let user of users){
+        balance += user.balance;
+      }
+      console.log(balance)
+      return {allBalance: balance};
+    }catch (e) {
+      throw e;
+    }
+  }
+
   async findUserByEmail(email: string): Promise<User> {
     const user = await this.userRepo.findOne({
       where: { email: email },
